@@ -40,18 +40,21 @@ void runServer()
     sf::IpAddress senderIpAddress;
     unsigned short senderPort;
     while (isRunning) {
-        std::this_thread::sleep_for(std::chrono::seconds(5));
-        std::cout << "Waiting for connections\n";
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        //std::cout << "Waiting for connections\n";
         if (serverSocket.receive(packet, senderIpAddress, senderPort) ==
             sf::Socket::Done) {
             uint8_t type;
             packet >> type;
+
             switch (static_cast<MessageType>(type)) {
+                
             case MessageType::ConnectionRequest:
+                packet.clear();
                 std::cout << "Connection request recieved\n";
                 if (clientCount < MAX_CLIENTS) {
                     std::cout << "Able to connect\n";
-                    packet.clear();
+                    
                     packet << static_cast<uint8_t>(
                         MessageType::ConnectionAccept);
 
@@ -71,10 +74,11 @@ void runServer()
                     }
                 }
                 else {
-                    std::cout << "Cannot be able to connect\n";
-                    packet << static_cast<uint8_t>(MessageType::ConnectionRefuse);
-                    packet << "Reason: Server is full.\n";
                     packet.clear();
+                    std::cout << "Cannot be able to connect\n";
+                    packet << static_cast<uint8_t>(
+                        MessageType::ConnectionRefuse);
+                    packet << "Reason: Server is full.\n";
                     if (serverSocket.send(packet, senderIpAddress,
                                           senderPort) != sf::Socket::Done) {
                         std::cout << "Failed to send connection refuse\n";
@@ -111,7 +115,7 @@ void runClient(std::string name)
         std::cout << "Connection refused: Unable to recieve data.\n";
         return;
     }
-    std::cout << "Response recieved!\n";
+    std::cout << "Response recieved!\nSize: " << packet.getDataSize() << '\n';
     uint8_t type;
     packet >> type;
     std::cout << "Connection type: " << (int)type << std::endl;
@@ -122,9 +126,12 @@ void runClient(std::string name)
         std::cout << "Connected with ID: " << (int)connectionId << '\n';
         break;
 
-    case MessageType::ConnectionRefuse:
+    case MessageType::ConnectionRefuse:{
         std::cout << "Refused\n";
-        break;
+        std::string reason;
+        packet >> reason;
+        std::cout << "Reason: " << reason << std::endl;
+        break;}
 
     default:
         break;
