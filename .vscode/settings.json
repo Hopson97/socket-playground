@@ -45,6 +45,13 @@
         "iostream": "cpp",
         "sstream": "cpp",
         "system_error": "cpp",
-        ".clang-format": "YAML"
+        ".clang-format": "YAML",
+        "chrono": "cpp",
+        "condition_variable": "cpp",
+        "cstdarg": "cpp",
+        "cstring": "cpp",
+        "numeric": "cpp",
+        "ratio": "cpp",
+        "mutex": "cpp"
     }
 }

@@ -1,9 +1,11 @@
 #pragma once
 
+#include <SFML/Network/Packet.hpp>
 #include <cstdint>
 
-constexpr uint16_t PORT = 42124;
-constexpr uint16_t PORT1 = 42125;
+using Port = uint16_t;
+
+constexpr Port PORT = 42124;
 constexpr uint8_t MAX_CLIENTS = 4;
 
 enum class MessageType {
@@ -11,3 +13,5 @@ enum class MessageType {
     ConnectionAccept,
     ConnectionRefuse,
 };
+
+MessageType getMessageType(sf::Packet &packet);

@@ -9,6 +9,7 @@ set(SOURCES
     src/input/keyboard.cpp
     src/client.cpp
     src/server.cpp
+    src/common.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

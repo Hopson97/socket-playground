@@ -11,90 +11,131 @@
 #include <thread>
 #include <tuple>
 
-namespace {
-    struct ClientConnection {
-        sf::IpAddress address;
-        uint8_t id = -1;
-    };
-
-    struct Server {
-        sf::UdpSocket socket;
-        std::array<ClientConnection, MAX_CLIENTS> clients;
-        uint8_t clientCount = 0;
-    };
-
-    std::tuple<bool, sf::Packet, sf::IpAddress, uint16_t>
-    getIncoming(sf::UdpSocket &socket)
-    {
-        sf::Packet packet;
-        sf::IpAddress senderIp;
-        uint16_t senderPort;
-
-        bool success =
-            socket.receive(packet, senderIp, senderPort) == sf::Socket::Done;
-        return {success, packet, senderIp, senderPort};
-    }
-} // namespace
-
-void handleConnectionRequest(Server &server, const sf::IpAddress &senderIp,
-                             uint16_t senderPort)
+void loghead(const std::string &msg)
 {
-    sf::Packet packet;
-    std::cout << "Connection request recieved\n";
-    if (server.clientCount < MAX_CLIENTS) {
-        std::cout << "Able to connect\n";
-
-        packet << static_cast<uint8_t>(MessageType::ConnectionAccept);
-
-        ClientConnection client;
-        client.address = senderIp;
-        client.id = server.clientCount;
-        server.clients[server.clientCount] = client;
-        server.clientCount++;
-
-        packet << client.id;
-        std::cout << "Sending response to " << client.address << "\n";
-        if (server.socket.send(packet, senderIp, senderPort) !=
-            sf::Socket::Done) {
-            std::cout << "Could not connect client :(\n";
-            server.clientCount--;
-        }
-    }
-    else {
-        packet.clear();
-        std::cout << "Cannot be able to connect\n";
-        packet << static_cast<uint8_t>(MessageType::ConnectionRefuse);
-        packet << "Reason: Server is full.\n";
-        if (server.socket.send(packet, senderIp, senderPort) !=
-            sf::Socket::Done) {
-            std::cout << "Failed to send connection refuse\n";
-            server.clientCount--;
-        }
-    }
+    std::cout << "\n===\n==\n" << msg << "\n-";
 }
 
-void runServer()
-{
-    Server server;
-    server.socket.bind(PORT);
-    server.socket.setBlocking(false);
+void log(const std::string &msg) 
+{ 
+    std::cout << "\n---\n" << msg << "\n-"; 
+}
 
-    std::atomic<bool> isRunning = true;
-    while (isRunning) {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        // std::cout << "Waiting for connections\n";
-        auto [success, packet, senderIp, senderPort] =
-            getIncoming(server.socket);
+class Server {
+    struct ClientInformation {
+        ClientInformation() = default;
+        ClientInformation(sf::IpAddress ipAddress, Port port, uint8_t id)
+            : ipAddress(ipAddress)
+            , port(port)
+            , id(id)
+        {
+        }
+        sf::IpAddress ipAddress;
+        Port port;
+
+        uint8_t id;
+
+        sf::Time timeOutTimer;
+    };
+
+  public:
+    Server();
+
+    void run();
+
+  private:
+    std::tuple<bool, sf::Packet, sf::IpAddress, Port> getIncomingPacket();
+    void handleIncomingConnectionRequest(const sf::IpAddress &address,
+                                         const Port port);
+
+    int findEmptyClientSlot() const;
+    bool isClientConnected(std::size_t slot) const;
+
+    sf::UdpSocket m_socket;
+    std::array<ClientInformation, MAX_CLIENTS> m_clients;
+    std::array<bool, MAX_CLIENTS> m_clientConnected;
+
+    std::atomic<bool> m_isServerRunning;
+};
+
+Server::Server()
+{
+    m_clientConnected.fill(false);
+    m_socket.bind(PORT);
+    m_socket.setBlocking(false);
+}
+
+void Server::run()
+{
+    while (m_isServerRunning) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        auto [success, packet, incomingIp, incomingPort] = getIncomingPacket();
         if (success) {
-            uint8_t type;
-            packet >> type;
-            switch (static_cast<MessageType>(type)) {
+            switch (getMessageType(packet)) {
                 case MessageType::ConnectionRequest:
-                    handleConnectionRequest(server, senderIp, senderPort);
+                    handleIncomingConnectionRequest(incomingIp, incomingPort);
                     break;
+
                 default:
                     break;
             }
         }
     }
 }
+
+std::tuple<bool, sf::Packet, sf::IpAddress, Port> Server::getIncomingPacket()
+{
+    sf::Packet packet;
+    sf::IpAddress incomingIp;
+    Port incomingPort;
+    bool gotPacket =
+        m_socket.receive(packet, incomingIp, incomingPort) == sf::Socket::Done;
+    return {gotPacket, packet, incomingIp, incomingPort};
+}
+
+void Server::handleIncomingConnectionRequest(const sf::IpAddress &address,
+                                             const Port port)
+{
+    loghead("Incoming connection requested.");
+    int freeSlot = findEmptyClientSlot();
+    if (freeSlot != -1) {
+        log("Connection is able to be established\n");
+        m_clients[freeSlot] = {address, port, static_cast<uint8_t>(freeSlot)};
+        m_clientConnected[freeSlot] = true;
+
+        sf::Packet packet;
+        packet << static_cast<uint8_t>(MessageType::ConnectionAccept)
+               << freeSlot;
+        if (m_socket.send(packet, address, port) != sf::Socket::Done) {
+            log("Unable to connect client.\n");
+            m_clientConnected[freeSlot] = false;
+        }
+        log("Connection acceptence sent.");
+    }
+    else {
+        log("Connection is not able to be established as server is full.\n");
+        sf::Packet packet;
+        packet << static_cast<uint8_t>(MessageType::ConnectionRefuse)
+               << "Server is full.";
+        if (m_socket.send(packet, address, port) != sf::Socket::Done) {
+            log("Unable to send client connection refusal.\n");
+        }
+    }
+}
+
+int Server::findEmptyClientSlot() const
+{
+    for (int i = 0; i < MAX_CLIENTS; i++) {
+        if (!isClientConnected(i)) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+bool Server::isClientConnected(std::size_t slot) const
+{
+    return m_clientConnected[slot];
+}
+
+void runServer() { Server().run(); }

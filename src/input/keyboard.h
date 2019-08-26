@@ -14,8 +14,8 @@ class Keyboard {
     Keyboard();
 
     /**
-     * @brief Updates the state of the keyboard. Must be called every frame in
-     * the event loop.
+     * @brief Updates the state of the keyboard. Must be called every frame
+     * in the event loop.
      *
      * @param e The event to check key events for
      */

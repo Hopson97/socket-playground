@@ -94,7 +94,9 @@ void runServer()
                         sf::Packet packet;
                         packet << msg;
                         if (clients[i].send(packet) != sf::Socket::Done) {
-                            std::cout << "Failed to broadcast message\n";
+                            std::cout << "Failed to "
+                                         "broadcast "
+                                         "message\n";
                         }
                     }
                 }
