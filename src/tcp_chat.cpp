@@ -163,17 +163,17 @@ void runClient(const std::string &name)
             if (socket.receive(packet) == sf::Socket::Done) {
                 packet >> message;
                 switch (message.type) {
-                case Message::Type::ClientMessage:
-                    std::cout << message.name << ": " << message.message
-                              << '\n';
-                    break;
+                    case Message::Type::ClientMessage:
+                        std::cout << message.name << ": " << message.message
+                                  << '\n';
+                        break;
 
-                case Message::Type::ServerStop:
-                    isRunning = false;
-                    return;
+                    case Message::Type::ServerStop:
+                        isRunning = false;
+                        return;
 
-                default:
-                    break;
+                    default:
+                        break;
                 }
             }
         }

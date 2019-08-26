@@ -7,6 +7,8 @@ project(chat VERSION 1.0)
 set(SOURCES
     src/main.cpp
     src/input/keyboard.cpp
+    src/client.cpp
+    src/server.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
