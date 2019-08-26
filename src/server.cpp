@@ -13,13 +13,10 @@
 
 void loghead(const std::string &msg)
 {
-    std::cout << "\n===\n==\n" << msg << "\n-";
+    std::cout << "\n======\n" << msg << "\n.........\n\n";
 }
 
-void log(const std::string &msg) 
-{ 
-    std::cout << "\n---\n" << msg << "\n-"; 
-}
+void log(const std::string &msg) { std::cout << msg << '\n'; }
 
 class Server {
     struct ClientInformation {
@@ -68,7 +65,7 @@ Server::Server()
 void Server::run()
 {
     while (m_isServerRunning) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
         auto [success, packet, incomingIp, incomingPort] = getIncomingPacket();
         if (success) {
             switch (getMessageType(packet)) {
@@ -100,12 +97,13 @@ void Server::handleIncomingConnectionRequest(const sf::IpAddress &address,
     int freeSlot = findEmptyClientSlot();
     if (freeSlot != -1) {
         log("Connection is able to be established\n");
+
         m_clients[freeSlot] = {address, port, static_cast<uint8_t>(freeSlot)};
         m_clientConnected[freeSlot] = true;
 
         sf::Packet packet;
         packet << static_cast<uint8_t>(MessageType::ConnectionAccept)
-               << freeSlot;
+               << static_cast<uint8_t>(freeSlot);
         if (m_socket.send(packet, address, port) != sf::Socket::Done) {
             log("Unable to connect client.\n");
             m_clientConnected[freeSlot] = false;
