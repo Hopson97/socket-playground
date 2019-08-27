@@ -4,12 +4,15 @@
 #include <SFML/Network/IpAddress.hpp>
 #include <SFML/Network/Packet.hpp>
 #include <SFML/Network/UdpSocket.hpp>
+#include <SFML/System/Clock.hpp>
+#include <SFML/System/Vector2.hpp>
 
 #include <array>
 #include <atomic>
 #include <iostream>
 #include <thread>
 #include <tuple>
+
 
 void loghead(const std::string &msg)
 {
@@ -25,6 +28,7 @@ class Server {
             : ipAddress(ipAddress)
             , port(port)
             , id(id)
+            , timeSinceLastPacket(sf::seconds(0))
         {
         }
         sf::IpAddress ipAddress;
@@ -32,7 +36,9 @@ class Server {
 
         uint8_t id;
 
-        sf::Time timeOutTimer;
+        sf::Vector2f position;
+
+        sf::Time timeSinceLastPacket;
     };
 
   public:
@@ -44,15 +50,20 @@ class Server {
     std::tuple<bool, sf::Packet, sf::IpAddress, Port> getIncomingPacket();
     void handleIncomingConnectionRequest(const sf::IpAddress &address,
                                          const Port port);
+    void handlePlayerPositionUpdate(sf::Packet& packet);
 
     int findEmptyClientSlot() const;
     bool isClientConnected(std::size_t slot) const;
+    ClientInformation& findById(uint8_t id);
 
     sf::UdpSocket m_socket;
     std::array<ClientInformation, MAX_CLIENTS> m_clients;
     std::array<bool, MAX_CLIENTS> m_clientConnected;
 
     std::atomic<bool> m_isServerRunning;
+    
+
+    sf::Clock m_timer;
 };
 
 Server::Server()
@@ -71,6 +82,10 @@ void Server::run()
             switch (getMessageType(packet)) {
                 case MessageType::ConnectionRequest:
                     handleIncomingConnectionRequest(incomingIp, incomingPort);
+                    break;
+
+                case MessageType::PlayerPosition:
+                    handlePlayerPositionUpdate(packet);
                     break;
 
                 default:
@@ -121,6 +136,19 @@ void Server::handleIncomingConnectionRequest(const sf::IpAddress &address,
     }
 }
 
+void Server::handlePlayerPositionUpdate(sf::Packet& packet) 
+{
+    uint8_t id;
+    packet >> id;
+    auto& client = findById(id);
+    client.timeSinceLastPacket = sf::Time::Zero;
+
+    sf::Vector2f position;
+    packet >> position.x >> position.y;
+
+    client.position = position;
+}
+
 int Server::findEmptyClientSlot() const
 {
     for (int i = 0; i < MAX_CLIENTS; i++) {
@@ -134,6 +162,10 @@ int Server::findEmptyClientSlot() const
 bool Server::isClientConnected(std::size_t slot) const
 {
     return m_clientConnected[slot];
+}
+
+Server::ClientInformation& Server::findById(uint8_t id) {
+    return m_clients[static_cast<std::size_t>(id)];
 }
 
 void runServer() { Server().run(); }

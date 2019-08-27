@@ -12,6 +12,8 @@ enum class MessageType {
     ConnectionRequest,
     ConnectionAccept,
     ConnectionRefuse,
+
+    PlayerPosition,
 };
 
 MessageType getMessageType(sf::Packet &packet);
