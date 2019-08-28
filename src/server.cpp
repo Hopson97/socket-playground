@@ -13,7 +13,6 @@
 #include <thread>
 #include <tuple>
 
-
 void loghead(const std::string &msg)
 {
     std::cout << "\n======\n" << msg << "\n.........\n\n";
@@ -47,21 +46,20 @@ class Server {
     void run();
 
   private:
-    std::tuple<bool, sf::Packet, sf::IpAddress, Port> getIncomingPacket();
     void handleIncomingConnectionRequest(const sf::IpAddress &address,
                                          const Port port);
-    void handlePlayerPositionUpdate(sf::Packet& packet);
+    void handlePlayerPositionUpdate(sf::Packet &packet);
+    void broadcast(sf::Packet &packet);
 
     int findEmptyClientSlot() const;
     bool isClientConnected(std::size_t slot) const;
-    ClientInformation& findById(uint8_t id);
+    ClientInformation &findById(uint8_t id);
 
     sf::UdpSocket m_socket;
     std::array<ClientInformation, MAX_CLIENTS> m_clients;
     std::array<bool, MAX_CLIENTS> m_clientConnected;
 
     std::atomic<bool> m_isServerRunning;
-    
 
     sf::Clock m_timer;
 };
@@ -76,8 +74,9 @@ Server::Server()
 void Server::run()
 {
     while (m_isServerRunning) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
-        auto [success, packet, incomingIp, incomingPort] = getIncomingPacket();
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        auto [success, packet, incomingIp, incomingPort] =
+            getIncomingPacket(m_socket);
         if (success) {
             switch (getMessageType(packet)) {
                 case MessageType::ConnectionRequest:
@@ -95,14 +94,15 @@ void Server::run()
     }
 }
 
-std::tuple<bool, sf::Packet, sf::IpAddress, Port> Server::getIncomingPacket()
+void Server::broadcast(sf::Packet &packet)
 {
-    sf::Packet packet;
-    sf::IpAddress incomingIp;
-    Port incomingPort;
-    bool gotPacket =
-        m_socket.receive(packet, incomingIp, incomingPort) == sf::Socket::Done;
-    return {gotPacket, packet, incomingIp, incomingPort};
+    for (std::size_t i = 0; i < MAX_CLIENTS; i++) {
+        if (isClientConnected(i)) {
+            auto &client = m_clients[i];
+
+            m_socket.send(packet, client.ipAddress, client.port);
+        }
+    }
 }
 
 void Server::handleIncomingConnectionRequest(const sf::IpAddress &address,
@@ -124,6 +124,10 @@ void Server::handleIncomingConnectionRequest(const sf::IpAddress &address,
             m_clientConnected[freeSlot] = false;
         }
         log("Connection acceptence sent.");
+
+        packet.clear();
+        packet << static_cast<uint8_t>(MessageType::PlayerJoin) << static_cast<uint8_t>(freeSlot);
+        broadcast(packet);
     }
     else {
         log("Connection is not able to be established as server is full.\n");
@@ -136,22 +140,27 @@ void Server::handleIncomingConnectionRequest(const sf::IpAddress &address,
     }
 }
 
-void Server::handlePlayerPositionUpdate(sf::Packet& packet) 
+void Server::handlePlayerPositionUpdate(sf::Packet &packet)
 {
+    loghead("Incoming: Position");
     uint8_t id;
     packet >> id;
-    auto& client = findById(id);
+    auto &client = findById(id);
     client.timeSinceLastPacket = sf::Time::Zero;
 
     sf::Vector2f position;
     packet >> position.x >> position.y;
 
     client.position = position;
+
+    sf::Packet send;
+    send << static_cast<uint8_t>(MessageType::PlayerPosition) << id
+         << position.x << position.y;
 }
 
 int Server::findEmptyClientSlot() const
 {
-    for (int i = 0; i < MAX_CLIENTS; i++) {
+    for (std::size_t i = 0; i < MAX_CLIENTS; i++) {
         if (!isClientConnected(i)) {
             return i;
         }
@@ -164,7 +173,8 @@ bool Server::isClientConnected(std::size_t slot) const
     return m_clientConnected[slot];
 }
 
-Server::ClientInformation& Server::findById(uint8_t id) {
+Server::ClientInformation &Server::findById(uint8_t id)
+{
     return m_clients[static_cast<std::size_t>(id)];
 }
 

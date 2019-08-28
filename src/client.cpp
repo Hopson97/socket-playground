@@ -13,41 +13,91 @@
 #include <iostream>
 #include <thread>
 
-namespace
-{
-    void clientSend(sf::UdpSocket& socket, sf::Packet& packet) {
+namespace {
+    struct Client {
+        Client(sf::Color c, uint8_t id)
+            : id(id)
+        {
+            renderable.setSize({64, 64});
+            renderable.setFillColor(c);
+            renderable.setOutlineColor(sf::Color::White);
+            renderable.setOutlineThickness(2);
+        }
+        sf::RectangleShape renderable;
+        uint8_t id;
+    };
+
+    void clientSend(sf::UdpSocket &socket, sf::Packet &packet)
+    {
         if (socket.send(packet, sf::IpAddress::getLocalAddress(), PORT) !=
-                sf::Socket::Done) {
-                std::cout << "Could not send.n";
-                return;
-            }
+            sf::Socket::Done) {
+            std::cout << "Could not send.n";
+            return;
+        }
     }
 
-    void run([[maybe_unused]]sf::UdpSocket& socket, [[maybe_unused]]const uint8_t id) {
+    void run(sf::UdpSocket &socket, const uint8_t id)
+    {
         sf::RenderWindow window({600, 400}, "Client");
         window.setFramerateLimit(60);
         window.setKeyRepeatEnabled(false);
+        socket.setBlocking(false);
 
         Keyboard keyboard;
 
         sf::Vector2f pos;
 
+        std::vector<Client> m_playerRenders;
+        m_playerRenders.emplace_back(sf::Color::Blue, id);
+
         while (window.isOpen()) {
             sf::Event e;
             while (window.pollEvent(e)) {
                 keyboard.update(e);
-                if (e.type == sf::Event::Closed ) {
+                if (e.type == sf::Event::Closed) {
                     window.close();
+                }
+                else if (e.type == sf::Event::MouseButtonPressed) {
+                    auto x = static_cast<float>(e.mouseButton.x);
+                    auto y = static_cast<float>(e.mouseButton.y);
+                    sf::Packet packet;
+                    packet << static_cast<uint8_t>(MessageType::PlayerPosition)
+                           << id << x << y;
+                    clientSend(socket, packet);
                 }
             }
             window.clear();
-            sf::Packet packet;
-            packet << static_cast<int>(MessageType::PlayerPosition) << id << pos.x << pos.y;
-            clientSend(socket, packet);
+
+            // Receive Packets
+            auto [success, packet, incomingIp, incomingPort] =
+                getIncomingPacket(socket);
+            if (success) {
+                switch (getMessageType(packet)) {
+                    case MessageType::PlayerJoin: {
+                        uint8_t joinId;
+                        packet >> joinId;
+                        if (id != joinId) {
+                            m_playerRenders.emplace_back(sf::Color::Red, id);
+                            std::cout
+                                << "New player joined, with ID: " << (int)joinId
+                                << '\n';
+                        }
+
+                    } break;
+                    default:
+                        break;
+                }
+            }
+
+            // Render
+            for (const auto &rect : m_playerRenders) {
+                window.draw(rect.renderable);
+            }
+
             window.display();
         }
     }
-}
+} // namespace
 
 void runClient(std::string name)
 {
