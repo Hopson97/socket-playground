@@ -9,6 +9,7 @@
 
 #include <array>
 #include <atomic>
+#include <functional>
 #include <iostream>
 #include <thread>
 #include <tuple>
@@ -23,7 +24,7 @@ void log(const std::string &msg) { std::cout << msg << '\n'; }
 class Server {
     struct ClientInformation {
         ClientInformation() = default;
-        ClientInformation(sf::IpAddress ipAddress, Port port, uint8_t id)
+        ClientInformation(sf::IpAddress ipAddress, Port port, ClientId id)
             : ipAddress(ipAddress)
             , port(port)
             , id(id)
@@ -33,7 +34,7 @@ class Server {
         sf::IpAddress ipAddress;
         Port port;
 
-        uint8_t id;
+        ClientId id;
 
         sf::Vector2f position;
 
@@ -49,11 +50,13 @@ class Server {
     void handleIncomingConnectionRequest(const sf::IpAddress &address,
                                          const Port port);
     void handlePlayerPositionUpdate(sf::Packet &packet);
-    void broadcast(sf::Packet &packet);
+    void broadcast(sf::Packet &packet, ClientId exclude = 255);
+
+    void clientForeach(std::function<void(ClientId)> func, ClientId exclude = 255);
 
     int findEmptyClientSlot() const;
     bool isClientConnected(std::size_t slot) const;
-    ClientInformation &findById(uint8_t id);
+    ClientInformation &findById(ClientId id);
 
     sf::UdpSocket m_socket;
     std::array<ClientInformation, MAX_CLIENTS> m_clients;
@@ -94,13 +97,20 @@ void Server::run()
     }
 }
 
-void Server::broadcast(sf::Packet &packet)
+void Server::broadcast(sf::Packet &packet, ClientId exlude)
+{
+    clientForeach([this, &packet](ClientId id) {
+        auto &client = m_clients[static_cast<std::size_t>(id)];
+        m_socket.send(packet, client.ipAddress, client.port);
+    }, exlude);
+}
+
+void Server::clientForeach(std::function<void(ClientId)> func, ClientId exclude)
 {
     for (std::size_t i = 0; i < MAX_CLIENTS; i++) {
-        if (isClientConnected(i)) {
-            auto &client = m_clients[i];
-
-            m_socket.send(packet, client.ipAddress, client.port);
+        auto clientId= static_cast<ClientId>(i);
+        if (isClientConnected(i) && clientId != exclude) {
+            func(clientId);
         }
     }
 }
@@ -113,21 +123,17 @@ void Server::handleIncomingConnectionRequest(const sf::IpAddress &address,
     if (freeSlot != -1) {
         log("Connection is able to be established\n");
 
-        m_clients[freeSlot] = {address, port, static_cast<uint8_t>(freeSlot)};
+        m_clients[freeSlot] = {address, port, static_cast<ClientId>(freeSlot)};
         m_clientConnected[freeSlot] = true;
 
         sf::Packet packet;
         packet << static_cast<uint8_t>(MessageType::ConnectionAccept)
-               << static_cast<uint8_t>(freeSlot);
+               << static_cast<ClientId>(freeSlot);
         if (m_socket.send(packet, address, port) != sf::Socket::Done) {
             log("Unable to connect client.\n");
             m_clientConnected[freeSlot] = false;
         }
         log("Connection acceptence sent.");
-
-        packet.clear();
-        packet << static_cast<uint8_t>(MessageType::PlayerJoin) << static_cast<uint8_t>(freeSlot);
-        broadcast(packet);
     }
     else {
         log("Connection is not able to be established as server is full.\n");
@@ -143,7 +149,7 @@ void Server::handleIncomingConnectionRequest(const sf::IpAddress &address,
 void Server::handlePlayerPositionUpdate(sf::Packet &packet)
 {
     loghead("Incoming: Position");
-    uint8_t id;
+    ClientId id;
     packet >> id;
     auto &client = findById(id);
     client.timeSinceLastPacket = sf::Time::Zero;
@@ -153,9 +159,10 @@ void Server::handlePlayerPositionUpdate(sf::Packet &packet)
 
     client.position = position;
 
-    sf::Packet send;
-    send << static_cast<uint8_t>(MessageType::PlayerPosition) << id
-         << position.x << position.y;
+    // Update clients on player positions
+    packet.clear();
+    packet << static_cast<uint8_t>(MessageType::PlayerPosition) << id << position.x << position.y;
+    broadcast(packet);
 }
 
 int Server::findEmptyClientSlot() const
@@ -173,7 +180,7 @@ bool Server::isClientConnected(std::size_t slot) const
     return m_clientConnected[slot];
 }
 
-Server::ClientInformation &Server::findById(uint8_t id)
+Server::ClientInformation& Server::findById(ClientId id)
 {
     return m_clients[static_cast<std::size_t>(id)];
 }

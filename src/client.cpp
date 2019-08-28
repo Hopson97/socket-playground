@@ -15,7 +15,7 @@
 
 namespace {
     struct Client {
-        Client(sf::Color c, uint8_t id)
+        Client(sf::Color c, ClientId id)
             : id(id)
         {
             renderable.setSize({64, 64});
@@ -24,7 +24,7 @@ namespace {
             renderable.setOutlineThickness(2);
         }
         sf::RectangleShape renderable;
-        uint8_t id;
+        ClientId id;
     };
 
     void clientSend(sf::UdpSocket &socket, sf::Packet &packet)
@@ -35,8 +35,19 @@ namespace {
             return;
         }
     }
+    
+    Client& findClient(std::vector<Client>& clients, ClientId id) {
+        for (auto& client : clients) {
+            if (client.id == id) {
+                return client;
+            }
+        }
 
-    void run(sf::UdpSocket &socket, const uint8_t id)
+        clients.emplace_back(sf::Color::Red, id);
+        return clients.back();
+    }
+
+    void run(sf::UdpSocket &socket, const ClientId id)
     {
         sf::RenderWindow window({600, 400}, "Client");
         window.setFramerateLimit(60);
@@ -74,7 +85,7 @@ namespace {
             if (success) {
                 switch (getMessageType(packet)) {
                     case MessageType::PlayerJoin: {
-                        uint8_t joinId;
+                        ClientId joinId;
                         packet >> joinId;
                         if (id != joinId) {
                             m_playerRenders.emplace_back(sf::Color::Red, id);
@@ -82,6 +93,13 @@ namespace {
                                 << "New player joined, with ID: " << (int)joinId
                                 << '\n';
                         }
+                    case MessageType::PlayerPosition:{
+                        ClientId moverId;
+                        sf::Vector2f position;
+                        packet >> moverId >> position.x >> position.y;
+                        findClient(m_playerRenders, moverId).renderable.setPosition(position);
+                        std::cout << "Got player position, ID: " << int(moverId) << " Player: " << int(id) << " Position: " << position.x << " " << position.y << '\n';
+                    }
 
                     } break;
                     default:
@@ -125,7 +143,7 @@ void runClient(std::string name)
     uint8_t type;
     packet >> type;
     std::cout << "Connection type: " << (int)type << std::endl;
-    uint8_t connectionId = -1;
+    ClientId connectionId = -1;
     switch (static_cast<MessageType>(type)) {
         case MessageType::ConnectionAccept:
             packet >> connectionId;

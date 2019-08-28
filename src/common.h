@@ -7,6 +7,7 @@
 #include <tuple>
 
 using Port = uint16_t;
+using ClientId = uint8_t;
 
 constexpr Port PORT = 42124;
 constexpr std::size_t MAX_CLIENTS = 4;
