@@ -31,8 +31,7 @@ namespace {
     {
         if (socket.send(packet, sf::IpAddress::getLocalAddress(), PORT) !=
             sf::Socket::Done) {
-            std::cout << "Could not send.n";
-            return;
+            std::cout << "Could not send\n";
         }
     }
     
