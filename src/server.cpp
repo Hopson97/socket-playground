@@ -14,6 +14,8 @@
 #include <thread>
 #include <tuple>
 
+const sf::Time TIMEOUT = sf::seconds(5.0f);
+
 void loghead(const std::string &msg)
 {
     std::cout << "\n======\n" << msg << "\n.........\n\n";
@@ -22,13 +24,14 @@ void loghead(const std::string &msg)
 void log(const std::string &msg) { std::cout << msg << '\n'; }
 
 class Server {
+    public:
     struct ClientInformation {
         ClientInformation() = default;
         ClientInformation(sf::IpAddress ipAddress, Port port, ClientId id)
             : ipAddress(ipAddress)
             , port(port)
             , id(id)
-            , timeSinceLastPacket(sf::seconds(0))
+            , lastPacketTime(sf::seconds(0))
         {
         }
         sf::IpAddress ipAddress;
@@ -38,7 +41,7 @@ class Server {
 
         sf::Vector2f position;
 
-        sf::Time timeSinceLastPacket;
+        sf::Time lastPacketTime;
     };
 
   public:
@@ -50,6 +53,11 @@ class Server {
     void handleIncomingConnectionRequest(const sf::IpAddress &address,
                                          const Port port);
     void handlePlayerPositionUpdate(sf::Packet &packet);
+
+    void handleKeepAlive(sf::Packet& packet);
+
+    ClientInformation& clientFromPacket(sf::Packet& packet);
+
     void broadcast(sf::Packet &packet, ClientId exclude = 255);
 
     void clientForeach(std::function<void(ClientId)> func, ClientId exclude = 255);
@@ -90,10 +98,20 @@ void Server::run()
                     handlePlayerPositionUpdate(packet);
                     break;
 
+                case MessageType::KeepAlive:
+                    handleKeepAlive(packet);
+
                 default:
                     break;
             }
         }
+
+        clientForeach([this](ClientId id) {
+            auto &client = m_clients[static_cast<std::size_t>(id)];
+            if ((m_timer.getElapsedTime() - client.lastPacketTime) > TIMEOUT)  {
+                std::cout << "A client has disconnected!\n";
+            }
+        });
     }
 }
 
@@ -149,10 +167,8 @@ void Server::handleIncomingConnectionRequest(const sf::IpAddress &address,
 void Server::handlePlayerPositionUpdate(sf::Packet &packet)
 {
     loghead("Incoming: Position");
-    ClientId id;
-    packet >> id;
-    auto &client = findById(id);
-    client.timeSinceLastPacket = sf::Time::Zero;
+    auto &client = clientFromPacket(packet);
+    client.lastPacketTime = m_timer.getElapsedTime();
 
     sf::Vector2f position;
     packet >> position.x >> position.y;
@@ -161,8 +177,18 @@ void Server::handlePlayerPositionUpdate(sf::Packet &packet)
 
     // Update clients on player positions
     packet.clear();
-    packet << static_cast<uint8_t>(MessageType::PlayerPosition) << id << position.x << position.y;
+    packet << static_cast<uint8_t>(MessageType::PlayerPosition) << client.id << position.x << position.y;
     broadcast(packet);
+}
+
+void Server::handleKeepAlive(sf::Packet& packet) {
+    clientFromPacket(packet).lastPacketTime = m_timer.getElapsedTime();
+}
+
+Server::ClientInformation& Server::clientFromPacket(sf::Packet& packet) {
+    ClientId id;
+    packet >> id;
+    return findById(id);
 }
 
 int Server::findEmptyClientSlot() const

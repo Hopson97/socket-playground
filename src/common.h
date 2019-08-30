@@ -19,6 +19,8 @@ enum class MessageType {
 
     PlayerJoin,
     PlayerPosition,
+
+    KeepAlive
 };
 
 MessageType getMessageType(sf::Packet &packet);

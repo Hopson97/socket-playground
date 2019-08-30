@@ -55,6 +55,8 @@ namespace {
 
         Keyboard keyboard;
 
+        sf::Clock keepAliveClock;
+
         sf::Vector2f pos;
 
         std::vector<Client> m_playerRenders;
@@ -104,6 +106,14 @@ namespace {
                     default:
                         break;
                 }
+            }
+
+            //Send a keep alive packet
+            if (keepAliveClock.getElapsedTime().asSeconds() > 1.5f) {
+                sf::Packet packet;
+                packet << static_cast<uint8_t>(MessageType::KeepAlive);
+                clientSend(socket, packet);
+                keepAliveClock.restart();
             }
 
             // Render
