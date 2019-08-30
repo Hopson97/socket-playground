@@ -20,6 +20,8 @@ enum class MessageType {
     PlayerJoin,
     PlayerPosition,
 
+    Disconnect,
+
     KeepAlive
 };
 

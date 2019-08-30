@@ -110,6 +110,10 @@ void Server::run()
             auto &client = m_clients[static_cast<std::size_t>(id)];
             if ((m_timer.getElapsedTime() - client.lastPacketTime) > TIMEOUT)  {
                 std::cout << "A client has disconnected!\n";
+                sf::Packet p;
+                p << id << static_cast<uint8_t>(MessageType::Disconnect);
+                broadcast(p);
+                m_clientConnected[id] = false;
             }
         });
     }
