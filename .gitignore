@@ -1,5 +1,8 @@
 # Project binaries
-/bin
-chat
+bin/
+
+# Editor files
 .vscode
+
+#Misc
 unused/
