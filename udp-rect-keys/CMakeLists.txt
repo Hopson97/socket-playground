@@ -3,12 +3,14 @@ cmake_minimum_required(VERSION 3.10)
 #Set up project
 project(udp-rects VERSION 1.0)
 
-#Set executable
 set(SOURCES
     src/main.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
+
+# Set up "sub projects"
+add_subdirectory(lib)
 
 #Set C++17
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
@@ -32,6 +34,7 @@ find_package(SFML REQUIRED network graphics window system)
 
 #Finally
 target_link_libraries(${PROJECT_NAME} 
+	libnet
     Threads::Threads 
     ${SFML_LIBRARIES} 
     ${SFML_DEPENDENCIES}
