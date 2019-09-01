@@ -1,7 +1,5 @@
 #include <iostream>
 
-#include <libnet/test.h>
+#include <libnet/server.h>
 
-int main() {
-    print("hello world");
-}
+int main(int argc, char **argv) { net::Server server; }
