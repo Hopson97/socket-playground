@@ -6,10 +6,6 @@ project(chat VERSION 1.0)
 #Set executable
 set(SOURCES
     src/main.cpp
-    src/input/keyboard.cpp
-    src/client.cpp
-    src/server.cpp
-    src/common.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
@@ -28,11 +24,11 @@ else()
 endif()
 
 #Set module path
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake_modules" ${CMAKE_MODULE_PATH})
 
 #Find libraries
 find_package(Threads)
-find_package(SFML REQUIRED audio network graphics window system)
+find_package(SFML REQUIRED network system)
 
 #Finally
 target_link_libraries(${PROJECT_NAME} 
