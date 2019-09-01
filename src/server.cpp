@@ -146,6 +146,7 @@ void Server::handleIncomingConnectionRequest(const sf::IpAddress &address,
         log("Connection is able to be established\n");
 
         m_clients[freeSlot] = {address, port, static_cast<ClientId>(freeSlot)};
+        m_clients[freeSlot].lastPacketTime = m_timer.getElapsedTime();
         m_clientConnected[freeSlot] = true;
 
         sf::Packet packet;
