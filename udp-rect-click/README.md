@@ -1,6 +1,6 @@
-# chat
+# UDP Rectangles
 
-description here
+Glitchy UDP thing where you click and it sends positions to other people connected to the server
 
 ## Building and Running
 
@@ -29,18 +29,9 @@ sh scripts/build.sh
 To run, at the root of the project:
 
 ```sh
-sh scripts/run.sh
-```
+#run server
+sh scripts/server.sh _
 
-To build and run in release mode, simply add the `release` suffix:
-
-```sh
-sh scripts/build.sh release
-sh scripts/run.sh release
-```
-
-You can also create a deployable build (that can be sent) by doing:
-
-```sh
-sh scripts/deploy.sh
+#run client
+sh scripts/client.sh name
 ```

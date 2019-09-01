@@ -1,6 +1,5 @@
 #include "client.h"
 #include "common.h"
-#include "input/keyboard.h"
 
 #include <SFML/Network/IpAddress.hpp>
 #include <SFML/Network/Packet.hpp>
@@ -53,10 +52,7 @@ namespace {
         window.setKeyRepeatEnabled(false);
         socket.setBlocking(false);
 
-        Keyboard keyboard;
-
         sf::Clock keepAliveClock;
-
         sf::Vector2f pos;
 
         std::vector<Client> m_playerRenders;
@@ -65,7 +61,6 @@ namespace {
         while (window.isOpen()) {
             sf::Event e;
             while (window.pollEvent(e)) {
-                keyboard.update(e);
                 if (e.type == sf::Event::Closed) {
                     window.close();
                 }

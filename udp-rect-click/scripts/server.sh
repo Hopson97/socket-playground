@@ -2,7 +2,7 @@
 
 if [ "$1" = "release" ]
 then
-    ./bin/release/chat server _
+    ./bin/release/udp-rects server _
 else
-    ./bin/debug/chat server _
+    ./bin/debug/udp-rects server _
 fi
