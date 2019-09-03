@@ -11,6 +11,6 @@ This is a server-client chat app, was first time succesfully using sockets.
 
 You click to go to a new location, and it shows other players this as well.
 
-3. [UDP Key Rects)(https://github.com/Hopson97/socket-playground/tree/master/udp-rect-keys)
+3. [UDP Key Rects](https://github.com/Hopson97/socket-playground/tree/master/udp-rect-keys)
 
 You press on the keyboard to move, and it shows this other players as well.
