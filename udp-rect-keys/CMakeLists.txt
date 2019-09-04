@@ -4,7 +4,8 @@ cmake_minimum_required(VERSION 3.10)
 project(udp-rects VERSION 1.0)
 
 set(SOURCES
-    src/main.cpp
+	src/main.cpp
+	src/client/application.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

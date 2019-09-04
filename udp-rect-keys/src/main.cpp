@@ -4,7 +4,7 @@
 
 void runServer() {}
 
-void runClient(std::string name) {std::cout << name << std::endl;}
+void runClient(std::string name) { std::cout << name << std::endl; }
 
 int main(int argc, char **argv)
 {

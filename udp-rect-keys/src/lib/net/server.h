@@ -15,8 +15,8 @@ namespace net {
 
       private:
         struct ClientConnection {
-          ClientId id;
-          sf::Time lastUpdate;
+            ClientId id;
+            sf::Time lastUpdate;
         };
 
         sf::UdpSocket m_socket;
