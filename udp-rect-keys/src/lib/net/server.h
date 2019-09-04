@@ -9,7 +9,7 @@
 namespace net {
     class Server final {
       public:
-        Server(CommandHandler& handler);
+        Server(CommandHandler &handler);
 
       private:
         struct ClientConnection {

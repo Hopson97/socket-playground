@@ -1,17 +1,21 @@
 #pragma once
 
 #include <array>
+#include <functional>
 
 #include "commands.h"
 
 namespace net {
     class CommandHandler final {
+      using Func = std::function<void(void)>;
       public:
-        CommandHandler& addCommand(Command command, std::function<void(void)> f);
+        CommandHandler &addCommand(Command command,
+                                   Func f);
 
         void invokeCommand(Command command);
-        
+
       private:
-        std::array<std::function<void(void)>, static_cast<std::uint16_t>(Command::CommandCount)> m_commands;
+        std::array<Func,
+                   static_cast<std::uint16_t>(Command::CommandCount)> m_commands;
     };
 } // namespace net
