@@ -7,7 +7,7 @@ namespace net {
         // General commands
         RequestConnection,
         AcceptConnection,
-        RejectCommand,
+        RejectConnection,
         KeepAlive,
         Disconnect,
 

@@ -7,7 +7,7 @@
 
 namespace net {
     class CommandHandler final {
-      using Func = std::function<void(void)>;
+      using Func = std::function<void()>;
       public:
         CommandHandler &addCommand(Command command,
                                    Func f);

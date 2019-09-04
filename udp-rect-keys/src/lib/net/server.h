@@ -3,6 +3,8 @@
 #include <SFML/Network/UdpSocket.hpp>
 #include <SFML/System/Clock.hpp>
 
+#include <array>
+
 #include "command_handler.h"
 #include "common.h"
 
@@ -13,12 +15,16 @@ namespace net {
 
       private:
         struct ClientConnection {
+          ClientId id;
+          sf::Time lastUpdate;
         };
 
         sf::UdpSocket m_socket;
         sf::Clock m_interalClock;
 
         CommandHandler m_commands;
+
+        std::array<ClientConnection, CLIENT_COUNT> m_clients;
     };
 } // namespace net
 
