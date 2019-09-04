@@ -9,8 +9,7 @@ set(SOURCES
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-# Set up "sub projects"
-add_subdirectory(lib)
+add_subdirectory(src)
 
 #Set C++17
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
@@ -34,7 +33,7 @@ find_package(SFML REQUIRED network graphics window system)
 
 #Finally
 target_link_libraries(${PROJECT_NAME} 
-	libnet
+	net
     Threads::Threads 
     ${SFML_LIBRARIES} 
     ${SFML_DEPENDENCIES}

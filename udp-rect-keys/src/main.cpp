@@ -1,8 +1,8 @@
 #include <iostream>
-#include <libnet/server.h>
+#include <net/server.h>
 #include <thread>
 
-void runServer() { net::Server server; }
+void runServer() {}
 
 void runClient(std::string name) {}
 

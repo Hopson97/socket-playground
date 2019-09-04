@@ -3,14 +3,19 @@
 #include <SFML/Network/UdpSocket.hpp>
 #include <SFML/System/Clock.hpp>
 
+#include "command_handler.h"
+#include "common.h"
+
 namespace net {
-    template <typename I> class Server final {
+    class Server final {
       public:
         Server() { m_socket.bind(PORT); }
 
       private:
-        sf::UdpSocket m_socket;
+        struct ClientConnection {
+        };
 
+        sf::UdpSocket m_socket;
         sf::Clock m_interalClock;
     };
 } // namespace net
