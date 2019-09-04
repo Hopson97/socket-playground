@@ -11,7 +11,7 @@ namespace net {
         KeepAlive,
         Disconnect,
 
-        //To get number of commands
+        // To get number of commands
         CommandCount
     };
 }
