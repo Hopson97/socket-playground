@@ -9,7 +9,7 @@
 namespace net {
     class Server final {
       public:
-        Server() { m_socket.bind(PORT); }
+        Server(CommandHandler& handler);
 
       private:
         struct ClientConnection {
@@ -17,6 +17,8 @@ namespace net {
 
         sf::UdpSocket m_socket;
         sf::Clock m_interalClock;
+
+        CommandHandler m_commands;
     };
 } // namespace net
 
