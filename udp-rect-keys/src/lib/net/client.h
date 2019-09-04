@@ -12,5 +12,3 @@ namespace net {
 
     };
 } // namespace net
-
-//http://enet.bespin.org/Tutorial.html
