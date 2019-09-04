@@ -1,5 +1,26 @@
 #include <iostream>
-
 #include <libnet/server.h>
+#include <thread>
 
-int main(int argc, char **argv) { net::Server server; }
+void runServer() { net::Server server; }
+
+void runClient(std::string name) {}
+
+int main(int argc, char **argv)
+{
+    if (argc < 3) {
+        std::cout << "Please enter `server/client name`" << std::endl;
+        return 0;
+    }
+
+    std::string kind = argv[1];
+    std::string name = argv[2];
+
+    if (kind == "server") {
+        runServer();
+        runClient(name);
+    }
+    else if (kind == "client") {
+        runClient(name);
+    }
+}

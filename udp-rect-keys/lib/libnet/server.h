@@ -4,23 +4,23 @@
 #include <SFML/System/Clock.hpp>
 
 namespace net {
-    class Server final {
-        public:
-            Server();
+    template <typename I> class Server final {
+      public:
+        Server() { m_socket.bind(PORT); }
 
-        private:
-            sf::UdpSocket m_socket;
+      private:
+        sf::UdpSocket m_socket;
 
-            sf::Clock m_interalClock;
+        sf::Clock m_interalClock;
     };
-}
+} // namespace net
 
 //#include<functional>
 //#include <array>
 //#include <cstdio>
 //
-//template<typename E>
-//struct CommandThing {
+// template<typename E>
+// struct CommandThing {
 //    CommandThing() {}
 //
 //    void give(E command, std::function<void()> f) {
@@ -31,16 +31,16 @@ namespace net {
 //        cmds[static_cast<std::size_t>(command)]();
 //    }
 //
-//    std::array<std::function<void()>, static_cast<std::size_t>(E::SIZE)> cmds;    
+//    std::array<std::function<void()>, static_cast<std::size_t>(E::SIZE)> cmds;
 //};
 //
-//enum class Test {
+// enum class Test {
 //    HandleConnect,
 //
 //    SIZE
 //};
 //
-//int main() {
+// int main() {
 //    CommandThing<Test> test;
 //
 //    test.give(Test::HandleConnect, []() {

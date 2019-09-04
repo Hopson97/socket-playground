@@ -1,3 +1,3 @@
 
 add_library(libnet 
-    test.cpp)
+    server.cpp)
