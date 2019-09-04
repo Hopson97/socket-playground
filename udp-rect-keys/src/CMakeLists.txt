@@ -1,2 +1,2 @@
 # Set up "sub projects"
-add_subdirectory(common)
+add_subdirectory(lib)
