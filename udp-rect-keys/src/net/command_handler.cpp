@@ -5,6 +5,7 @@ namespace net {
                                                std::function<void(void)> f)
     {
         m_commands[static_cast<std::uint16_t>(command)] = f;
+        return *this;
     }
 
     void CommandHandler::invokeCommand(Command command)
