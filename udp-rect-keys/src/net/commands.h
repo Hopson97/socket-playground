@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SFML/Network.hpp>
+#include <SFML/Network/Packet.hpp>
 
 namespace net {
     enum class Command : uint16_t {
@@ -14,4 +14,7 @@ namespace net {
         // To get number of commands
         CommandCount
     };
-}
+
+    sf::Packet &operator>>(sf::Packet &packet, Command command);
+    sf::Packet &operator<<(sf::Packet &packet, Command command);
+} // namespace net

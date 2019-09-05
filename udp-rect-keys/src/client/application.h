@@ -1,7 +1,7 @@
 #pragma once
 
+#include "../net/client_manager.h"
 #include <SFML/Graphics/RenderWindow.hpp>
-#include <net/client.h>
 
 class Application {
   public:
@@ -10,6 +10,8 @@ class Application {
     void run();
 
   private:
+    void pollWindowEvents();
+
     sf::RenderWindow m_window;
-    net::Client m_client;
+    net::ClientManager m_client;
 };
