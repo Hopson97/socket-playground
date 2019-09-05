@@ -1,6 +1,7 @@
 #include <iostream>
-#include <net/server.h>
 #include <thread>
+
+#include "client/application.h"
 
 void runServer() {}
 
@@ -17,10 +18,9 @@ int main(int argc, char **argv)
     std::string name = argv[2];
 
     if (kind == "server") {
-        runServer();
-        runClient(name);
     }
     else if (kind == "client") {
-        runClient(name);
+        Application app;
+        app.run();
     }
 }
