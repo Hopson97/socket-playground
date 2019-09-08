@@ -4,7 +4,7 @@
 #include <SFML/Network/Packet.hpp>
 #include <iostream>
 
-#include "../common/commands.h"
+#include "../common/net_helper.h"
 
 ClientManager::ClientManager(const sf::IpAddress &host, Port port)
     : m_hostIp(host)
@@ -18,7 +18,7 @@ ClientManager::ClientManager(const sf::IpAddress &host, Port port)
 
     // Get response
     packet.clear();
-    auto recieved = recieveCommand(m_socket, packet);
+    auto recieved = recievePacket(m_socket, packet);
     switch (recieved.command) {
         case Command::AcceptConnection:
             m_clientid = recieved.id;
@@ -30,6 +30,12 @@ ClientManager::ClientManager(const sf::IpAddress &host, Port port)
             std::cout << "Connection refused\n";
             break;
     }
+}
+
+
+void ClientManager::tick() {
+    auto packet = makePacket(Command::KeepAlive, m_clientid);
+    send(packet);
 }
 
 void ClientManager::send(sf::Packet &packet)

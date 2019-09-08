@@ -3,11 +3,13 @@
 #include <SFML/Network/IpAddress.hpp>
 #include <SFML/Network/UdpSocket.hpp>
 
-#include "../common/common.h"
+#include "../common/constants.h"
 
 class ClientManager final {
   public:
     ClientManager(const sf::IpAddress &host, Port port);
+
+    void tick();
 
     bool isConnected() const;
 
