@@ -3,7 +3,7 @@
 #include <SFML/Network/IpAddress.hpp>
 #include <SFML/Network/Packet.hpp>
 
-#include "common.h"
+#include "constants.h"
 
 enum class Command : uint16_t {
     // General commands
