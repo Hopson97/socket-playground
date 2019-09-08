@@ -1,6 +1,6 @@
 #include "command_handler.h"
 
-namespace net {
+
     CommandHandler &CommandHandler::addCommand(Command command,
                                                std::function<void(void)> f)
     {
@@ -12,4 +12,3 @@ namespace net {
     {
         m_commands[static_cast<std::uint16_t>(command)]();
     }
-} // namespace net

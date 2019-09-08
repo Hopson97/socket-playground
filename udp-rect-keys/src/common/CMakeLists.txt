@@ -1,7 +1,5 @@
 add_library(
-    net
-    client_manager.cpp
-    server.cpp
+    common
     command_handler.cpp
     commands.cpp
 )

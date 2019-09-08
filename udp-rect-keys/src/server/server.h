@@ -5,12 +5,11 @@
 
 #include <array>
 
-#include "command_handler.h"
-#include "common.h"
+#include "../common/common.h"
 
 class Server final {
   public:
-    Server(CommandHandler &handler);
+    Server();
 
   private:
     struct ClientConnection {

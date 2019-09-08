@@ -34,7 +34,8 @@ find_package(SFML REQUIRED network graphics window system)
 
 #Finally
 target_link_libraries(${PROJECT_NAME} 
-	net
+	common
+	server
 	client
     Threads::Threads 
     ${SFML_LIBRARIES} 

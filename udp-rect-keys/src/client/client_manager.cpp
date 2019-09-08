@@ -1,6 +1,6 @@
 #include "client_manager.h"
 
-#include "commands.h"
+#include "../common/commands.h"
 #include <SFML/Network/Packet.hpp>
 #include <iostream>
 

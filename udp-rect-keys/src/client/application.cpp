@@ -3,7 +3,7 @@
 #include <SFML/Window/Event.hpp>
 
 Application::Application()
-    : m_client(sf::IpAddress::LocalHost, net::PORT)
+    : m_client(sf::IpAddress::LocalHost, PORT)
 {
 }
 
