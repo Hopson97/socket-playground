@@ -8,25 +8,20 @@
 #include "command_handler.h"
 #include "common.h"
 
-namespace net {
-    class Server final {
-      public:
-        Server(CommandHandler &handler);
+class Server final {
+  public:
+    Server(CommandHandler &handler);
 
-      private:
-        struct ClientConnection {
-            ClientId id;
-            sf::Time lastUpdate;
-        };
-
-        sf::UdpSocket m_socket;
-        sf::Clock m_interalClock;
-
-        CommandHandler m_commands;
-
-        std::array<ClientConnection, CLIENT_COUNT> m_clients;
+  private:
+    struct ClientConnection {
+        ClientId id;
+        sf::Time lastUpdate;
     };
-} // namespace net
+
+    sf::UdpSocket m_socket;
+    sf::Clock m_interalClock;
+    std::array<ClientConnection, CLIENT_COUNT> m_clients;
+};
 
 //#include<functional>
 //#include <array>

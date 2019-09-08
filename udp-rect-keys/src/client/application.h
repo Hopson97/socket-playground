@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../net/client_manager.h"
+#include "client_manager.h"
 #include <SFML/Graphics/RenderWindow.hpp>
 
 class Application {
@@ -13,5 +13,5 @@ class Application {
     void pollWindowEvents();
 
     sf::RenderWindow m_window;
-    net::ClientManager m_client;
+    ClientManager m_client;
 };
