@@ -16,22 +16,3 @@ sf::Packet &operator>>(sf::Packet &packet, Command &command)
     command = static_cast<Command>(commandId);
     return packet;
 }
-
-RecievedCommandInfo recieveCommand(sf::UdpSocket &socket, sf::Packet &packet)
-{
-    auto info = recieveNoIdCommand(socket, packet);
-    packet >> info.id;
-    return info;
-}
-
-RecievedCommandInfo recieveNoIdCommand(sf::UdpSocket &socket,
-                                       sf::Packet &packet)
-{
-    RecievedCommandInfo info;
-    if (socket.receive(packet, info.sender, info.senderPort) !=
-        sf::Socket::Done) {
-        std::cout << "Could not recieve packet\n";
-    }
-    packet >> info.command;
-    return info;
-}

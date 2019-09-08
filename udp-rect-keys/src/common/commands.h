@@ -17,16 +17,7 @@ enum class Command : uint16_t {
     CommandCount
 };
 
-struct RecievedCommandInfo {
-    Command command;
-    ClientId id;
-    sf::IpAddress sender;
-    Port senderPort;
-};
-
 sf::Packet &operator>>(sf::Packet &packet, Command &command);
 sf::Packet &operator<<(sf::Packet &packet, Command command);
 
-RecievedCommandInfo recieveCommand(sf::UdpSocket &socket, sf::Packet &packet);
-RecievedCommandInfo recieveNoIdCommand(sf::UdpSocket &socket,
-                                       sf::Packet &packet);
+
