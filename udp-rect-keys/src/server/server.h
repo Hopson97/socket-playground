@@ -7,19 +7,35 @@
 
 #include "../common/constants.h"
 
+struct RecievedCommandInfo;
+
 class Server final {
   public:
     Server();
+
+    void run();
 
   private:
     struct ClientConnection {
         ClientId id;
         sf::Time lastUpdate;
+        sf::IpAddress address;
+        Port port;
+        bool isConnected = false;
+
+        void init(const RecievedCommandInfo &info, ClientId id);
     };
+
+    void handlePacket(const RecievedCommandInfo &info, sf::Packet &packet);
+
+    void handleIncomingConection(const RecievedCommandInfo &info);
+
+    std::size_t emptySlot();
 
     sf::UdpSocket m_socket;
     sf::Clock m_interalClock;
-    std::array<ClientConnection, CLIENT_COUNT> m_clients;
+    std::array<ClientConnection, CLIENT_COUNT> m_clientSlots;
+    bool m_isRunning = true;
 };
 
 //#include<functional>
