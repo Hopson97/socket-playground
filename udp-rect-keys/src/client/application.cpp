@@ -10,6 +10,7 @@ Application::Application()
 void Application::run()
 {
     m_window.create({1280, 720}, "UDP Socket playground");
+    m_window.setFramerateLimit(60);
 
     while (m_window.isOpen()) {
         pollWindowEvents();

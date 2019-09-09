@@ -30,10 +30,11 @@ ClientManager::ClientManager(const sf::IpAddress &host, Port port)
             std::cout << "Connection refused\n";
             break;
     }
+    m_socket.setBlocking(false);
 }
 
-
-void ClientManager::tick() {
+void ClientManager::tick()
+{
     auto packet = makePacket(Command::KeepAlive, m_clientid);
     send(packet);
 }
