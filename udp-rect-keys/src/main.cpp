@@ -2,6 +2,7 @@
 #include <thread>
 
 #include "client/application.h"
+#include "server/server.h"
 
 void runServer() {}
 
@@ -18,6 +19,8 @@ int main(int argc, char **argv)
     std::string name = argv[2];
 
     if (kind == "server") {
+        Server server;
+        server.run();
     }
     else if (kind == "client") {
         Application app;
