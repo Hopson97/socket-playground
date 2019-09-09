@@ -19,5 +19,3 @@ enum class Command : uint16_t {
 
 sf::Packet &operator>>(sf::Packet &packet, Command &command);
 sf::Packet &operator<<(sf::Packet &packet, Command command);
-
-

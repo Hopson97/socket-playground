@@ -1,8 +1,8 @@
 #pragma once
 
-#include <SFML/Network/Packet.hpp>
 #include "commands.h"
 #include "constants.h"
+#include <SFML/Network/Packet.hpp>
 
 struct RecievedCommandInfo {
     Command command;
@@ -14,4 +14,3 @@ struct RecievedCommandInfo {
 sf::Packet makePacket(Command command, ClientId clientId);
 
 RecievedCommandInfo recievePacket(sf::UdpSocket &socket, sf::Packet &packet);
-
