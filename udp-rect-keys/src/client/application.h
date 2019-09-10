@@ -2,6 +2,7 @@
 
 #include "client_manager.h"
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 
 class Application {
   public:
@@ -14,4 +15,13 @@ class Application {
 
     sf::RenderWindow m_window;
     ClientManager m_client;
+
+    struct Paddle {
+      Paddle() {
+        sprite.setSize({64, 256});
+      }
+
+      sf::RectangleShape sprite;
+      float velocity;
+    };
 };

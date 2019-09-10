@@ -9,13 +9,19 @@ Application::Application()
 
 void Application::run()
 {
+    if (!m_client.isConnected()) {
+        return;
+    }
     m_window.create({1280, 720}, "UDP Socket playground");
     m_window.setFramerateLimit(60);
+
+    sf::Clock timer;
 
     while (m_window.isOpen()) {
         pollWindowEvents();
 
         // Input
+        
 
         // Update
 
