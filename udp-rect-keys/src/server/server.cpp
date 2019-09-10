@@ -12,6 +12,7 @@ Server::Server()
     for (int i = 0; i < m_clientSlots.size(); i++) {
         m_clientSlots[i].id = i;
     }
+    std::cout << "Server has been set up\n";
 }
 
 void Server::run()
@@ -25,19 +26,28 @@ void Server::run()
             packet >> info.command >> info.id;
             handlePacket(info, packet);
         }
+        for (auto& client : m_clientSlots) {
+            if (client.isConnected && m_interalClock.getElapsedTime() - client.lastUpdate > sf::seconds(1)) {
+                client.isConnected = false;
+                std::cout << (int)client.id << " has timed-out\n";
+            }
+        }
+
     }
 }
 
 void Server::handlePacket(const RecievedCommandInfo &info, sf::Packet &packet)
 {
-    auto &client = m_clientSlots[info.id];
-    switch (info.command) {
-        case Command::RequestConnection:
-            handleIncomingConection(info);
-            break;
-
-        default:
-            break;
+    if (info.command == Command::RequestConnection) {
+        handleIncomingConection(info);
+    }
+    else {
+        auto &client = m_clientSlots[info.id];
+        client.lastUpdate = m_interalClock.getElapsedTime();
+        switch (info.command) {
+            default:
+                break;
+        }
     }
 }
 

@@ -11,9 +11,7 @@ ClientManager::ClientManager(const sf::IpAddress &host, Port port)
     , m_hostPort(port)
 {
     // Send connection request
-    sf::Packet packet;
-    packet << Command::RequestConnection
-           << sf::IpAddress::getLocalAddress().toString();
+    auto packet = makePacket(Command::RequestConnection, 0);
     send(packet);
 
     // Get response

@@ -35,6 +35,10 @@ void Application::run()
         m_player.sprite.move({0, m_player.velocity});
         m_player.velocity *= 0.98;
 
+        if (timer.getElapsedTime().asSeconds() > 0.5) {
+            m_client.tick();
+        }
+
         // Draw
         m_window.clear();
 
