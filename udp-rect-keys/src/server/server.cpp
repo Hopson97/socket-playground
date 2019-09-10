@@ -49,7 +49,8 @@ void Server::handleIncomingConection(const RecievedCommandInfo &info)
     if (slotNumber == 404) {
         sf::Packet response = makePacket(Command::RejectConnection, 0);
         response << "No free slots";
-        if (m_socket.send(response, info.sender, info.senderPort) != sf::Socket::Done) {
+        if (m_socket.send(response, info.sender, info.senderPort) !=
+            sf::Socket::Done) {
             m_clientSlots[slotNumber].isConnected = false;
         }
     }
@@ -59,7 +60,8 @@ void Server::handleIncomingConection(const RecievedCommandInfo &info)
         slot.init(info, slotNumber);
         slot.lastUpdate = m_interalClock.getElapsedTime();
 
-        if (m_socket.send(response, info.sender, info.senderPort) != sf::Socket::Done) {
+        if (m_socket.send(response, info.sender, info.senderPort) !=
+            sf::Socket::Done) {
             m_clientSlots[slotNumber].isConnected = false;
         }
     }

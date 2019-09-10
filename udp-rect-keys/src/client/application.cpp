@@ -24,7 +24,6 @@ void Application::run()
 
         // Input
 
-
         // Update
 
         // Draw
