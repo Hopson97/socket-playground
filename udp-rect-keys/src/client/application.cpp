@@ -2,6 +2,8 @@
 
 #include <SFML/Window/Event.hpp>
 
+#include "input/keyboard.h"
+
 Application::Application()
     : m_client(sf::IpAddress::LocalHost, PORT)
 {
@@ -21,7 +23,7 @@ void Application::run()
         pollWindowEvents();
 
         // Input
-        
+
 
         // Update
 
