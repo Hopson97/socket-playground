@@ -16,19 +16,24 @@ ClientManager::ClientManager(const sf::IpAddress &host, Port port)
 
     // Get response
     packet.clear();
-    auto recieved = recievePacket(m_socket, packet);
-    switch (recieved.command) {
-        case Command::AcceptConnection:
-            m_clientid = recieved.id;
-            m_isConnected = true;
-            std::cout << "Connection success\n";
-            break;
+    RecievedCommandInfo info;
+    if (m_socket.receive(packet, info.sender, info.senderPort) ==
+        sf::Socket::Done) {
+        packet >> info.command >> info.id;
+        switch (info.command) {
+            case Command::AcceptConnection:
+                std::cout << "Connection accepted\n";
+                m_clientid = info.id;
+                std::cout << (int)m_clientid << '\n';
+                m_isConnected = true;
+                break;
 
-        case Command::RejectConnection:
-            std::cout << "Connection refused\n";
-            break;
+            case Command::RejectConnection:
+                std::cout << "Connection refused\n";
+                break;
+        }
+        m_socket.setBlocking(false);
     }
-    m_socket.setBlocking(false);
 }
 
 void ClientManager::tick()

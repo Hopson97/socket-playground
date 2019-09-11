@@ -26,13 +26,14 @@ void Server::run()
             packet >> info.command >> info.id;
             handlePacket(info, packet);
         }
-        for (auto& client : m_clientSlots) {
-            if (client.isConnected && m_interalClock.getElapsedTime() - client.lastUpdate > sf::seconds(1)) {
+        for (auto &client : m_clientSlots) {
+            if (client.isConnected &&
+                m_interalClock.getElapsedTime() - client.lastUpdate >
+                    sf::seconds(1)) {
                 client.isConnected = false;
                 std::cout << (int)client.id << " has timed-out\n";
             }
         }
-
     }
 }
 
@@ -65,7 +66,8 @@ void Server::handleIncomingConection(const RecievedCommandInfo &info)
         }
     }
     else {
-        sf::Packet response = makePacket(Command::AcceptConnection, 0);
+        sf::Packet response = makePacket(Command::AcceptConnection,
+                                         static_cast<ClientId>(slotNumber));
         auto &slot = m_clientSlots[slotNumber];
         slot.init(info, slotNumber);
         slot.lastUpdate = m_interalClock.getElapsedTime();
