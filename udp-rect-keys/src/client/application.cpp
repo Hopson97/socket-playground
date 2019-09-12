@@ -2,11 +2,17 @@
 
 #include <SFML/Window/Event.hpp>
 
+#include "../common/net_helper.h"
+
 Application::Application()
     : m_client(sf::IpAddress::LocalHost, PORT)
 {
     m_player.sprite.setPosition({20, 20});
     m_enemy.sprite.setPosition({1096, 20});
+
+    if(m_client.isConnected()) {
+
+    }
 }
 
 void Application::run()
@@ -36,7 +42,14 @@ void Application::run()
         m_player.velocity *= 0.98;
 
         if (timer.getElapsedTime().asSeconds() > 0.5) {
-            m_client.tick();
+            auto packet = makePacket(Command::KeepAlive, m_client.clientId());
+            m_client.send(packet);
+
+            packet = makePacket(Command::PlayerPosition, m_client.clientId());
+            packet << m_player.sprite.getPosition().x << m_player.sprite.getPosition().y;
+
+
+            timer.restart();
         }
 
         // Draw

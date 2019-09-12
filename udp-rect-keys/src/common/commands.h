@@ -13,8 +13,9 @@ enum class Command : uint16_t {
     KeepAlive,
     Disconnect,
 
-    // To get number of commands
-    CommandCount
+    // Game play
+    PlayerPosition,
+    BallPosition
 };
 
 sf::Packet &operator>>(sf::Packet &packet, Command &command);

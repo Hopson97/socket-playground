@@ -12,10 +12,11 @@ class ClientManager final {
     void tick();
 
     bool isConnected() const;
+    ClientId clientId() const { return m_clientid; }
 
-  private:
     void send(sf::Packet &packet);
 
+  private:
     sf::UdpSocket m_socket;
     sf::IpAddress m_hostIp;
     Port m_hostPort;

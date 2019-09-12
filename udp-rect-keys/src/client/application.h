@@ -14,7 +14,7 @@ class Application {
 
   private:
     struct Player {
-        Player() { sprite.setSize({64, 256}); }
+        Player() { sprite.setSize({PLAYER_WIDTH, PLAYER_HEIGHT}); }
 
         sf::RectangleShape sprite;
         float velocity;
