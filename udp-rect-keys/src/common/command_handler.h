@@ -14,6 +14,6 @@ class CommandHandler final {
     void invokeCommand(Command command);
 
   private:
-    std::array<Func, static_cast<std::uint16_t>(Command::CommandCount)>
-        m_commands;
+    // std::array<Func, static_cast<std::uint16_t>(Command::CommandCount)>
+    //   m_commands;
 };
