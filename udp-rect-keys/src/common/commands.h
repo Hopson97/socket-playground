@@ -15,7 +15,10 @@ enum class Command : uint16_t {
 
     // Game play
     PlayerPosition,
-    BallPosition
+    BallPosition,
+
+    // Requests
+    GetPlayerPositions
 };
 
 sf::Packet &operator>>(sf::Packet &packet, Command &command);

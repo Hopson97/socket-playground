@@ -46,6 +46,13 @@ void Server::handlePacket(const RecievedCommandInfo &info, sf::Packet &packet)
         auto &client = m_clientSlots[info.id];
         client.lastUpdate = m_interalClock.getElapsedTime();
         switch (info.command) {
+            case Command::PlayerPosition:
+                handlePlayerPosition(info, packet);
+                break;
+
+            case Command::GetPlayerPositions:
+                handleRequestPlayerPositions(info);
+
             default:
                 break;
         }
@@ -75,6 +82,33 @@ void Server::handleIncomingConection(const RecievedCommandInfo &info)
         if (m_socket.send(response, info.sender, info.senderPort) !=
             sf::Socket::Done) {
             m_clientSlots[slotNumber].isConnected = false;
+        }
+    }
+}
+
+void Server::handlePlayerPosition(const RecievedCommandInfo &info,
+                                  sf::Packet &packet)
+{
+    auto &slot = m_clientSlots[static_cast<std::size_t>(info.id)];
+    float x;
+    float y;
+    packet >> x >> y;
+    slot.playerBounds.left = x;
+    slot.playerBounds.top = y;
+}
+
+void Server::handleRequestPlayerPositions(const RecievedCommandInfo &info)
+{
+    auto &slot = m_clientSlots[static_cast<std::size_t>(info.id)];
+
+    for (const auto &player : m_clientSlots) {
+        if (player.isConnected) {
+            auto packet = makePacket(Command::PlayerPosition, player.id);
+            packet << player.playerBounds.left << player.playerBounds.top;
+            if (m_socket.send(packet, slot.address, slot.port) !=
+                sf::Socket::Done) {
+                std::cout << "Failed to send packet to host\n";
+            }
         }
     }
 }

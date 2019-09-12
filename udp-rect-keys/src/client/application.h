@@ -17,15 +17,17 @@ class Application {
         Player() { sprite.setSize({PLAYER_WIDTH, PLAYER_HEIGHT}); }
 
         sf::RectangleShape sprite;
-        float velocity;
+        sf::Vector2f velocity;
+
+        bool isConnected = false;
     };
     void pollWindowEvents();
 
     sf::RenderWindow m_window;
     ClientManager m_client;
 
-    Player m_player;
-    Player m_enemy;
+    Player &m_player;
+    std::array<Player, CLIENT_COUNT> m_players;
 
     Keyboard m_keyboard;
 };
