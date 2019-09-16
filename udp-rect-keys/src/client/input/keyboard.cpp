@@ -1,6 +1,6 @@
 #include "keyboard.h"
 
-Keyboard::Keyboard() { std::fill(m_keys.begin(), m_keys.end(), false); }
+Keyboard::Keyboard() { resetKeys(); }
 
 void Keyboard::update(sf::Event e)
 {
@@ -15,6 +15,10 @@ void Keyboard::update(sf::Event e)
             m_keys[e.key.code] = true;
             break;
 
+        case sf::Event::LostFocus:
+            resetKeys();
+            break;
+
         default:
             break;
     }
@@ -25,4 +29,8 @@ bool Keyboard::isKeyDown(sf::Keyboard::Key key) const { return m_keys[key]; }
 bool Keyboard::keyReleased(sf::Keyboard::Key key) const
 {
     return m_recentlyReleased == key;
+}
+
+void Keyboard::resetKeys() {
+    std::fill(m_keys.begin(), m_keys.end(), false);
 }
