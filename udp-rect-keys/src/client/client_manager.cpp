@@ -36,7 +36,8 @@ ClientManager::ClientManager(const sf::IpAddress &host, Port port)
     }
 }
 
-bool ClientManager::recievePacket(RecievedCommandInfo& info, sf::Packet& packet) {
+bool ClientManager::recievePacket(RecievedCommandInfo &info, sf::Packet &packet)
+{
     return isRecievePacket(m_socket, info, packet);
 }
 

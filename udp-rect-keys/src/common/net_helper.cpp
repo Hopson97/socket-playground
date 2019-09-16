@@ -11,12 +11,12 @@ sf::Packet makePacket(Command command, ClientId clientId)
     return packet;
 }
 
-bool isRecievePacket(sf::UdpSocket& socket, RecievedCommandInfo& info, sf::Packet& packet)
+bool isRecievePacket(sf::UdpSocket &socket, RecievedCommandInfo &info,
+                     sf::Packet &packet)
 {
     if (socket.receive(packet, info.sender, info.senderPort) ==
         sf::Socket::Done) {
         packet >> info.command >> info.id;
-        std::cout << (int)info.command << std::endl;
         return true;
     }
     return false;

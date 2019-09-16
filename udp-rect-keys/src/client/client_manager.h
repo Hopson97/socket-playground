@@ -16,7 +16,7 @@ class ClientManager final {
 
     void send(sf::Packet &packet);
 
-    bool recievePacket(RecievedCommandInfo& info, sf::Packet& packet);
+    bool recievePacket(RecievedCommandInfo &info, sf::Packet &packet);
 
   private:
     sf::UdpSocket m_socket;

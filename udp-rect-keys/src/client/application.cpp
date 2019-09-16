@@ -1,5 +1,6 @@
 #include "application.h"
 
+#include <iostream>
 #include <SFML/Window/Event.hpp>
 
 #include "../common/net_helper.h"
@@ -51,26 +52,23 @@ void Application::run()
         m_player.velocity.x *= 0.98;
         m_player.velocity.y *= 0.98;
 
-        if (timer.getElapsedTime().asSeconds() > 0.5) {
+        if (timer.getElapsedTime().asMilliseconds() > 20) {
             auto packet = makePacket(Command::KeepAlive, m_client.clientId());
             m_client.send(packet);
 
             packet = makePacket(Command::PlayerPosition, m_client.clientId());
             packet << m_player.sprite.getPosition().x
                    << m_player.sprite.getPosition().y;
+            m_client.send(packet);
 
             timer.restart();
-        }
-        
-        //Recieve
-        {
-            RecievedCommandInfo info;
-            sf::Packet packet;
-            while (m_client.recievePacket(info, packet)) {
-                
-            }
+
+            packet =
+                makePacket(Command::GetPlayerPositions, m_client.clientId());
+            m_client.send(packet);
         }
 
+        handleIncomingPacket();
         // Draw
         m_window.clear();
 
@@ -81,6 +79,30 @@ void Application::run()
         }
 
         m_window.display();
+    }
+}
+
+void Application::handleIncomingPacket()
+{
+    RecievedCommandInfo info;
+    sf::Packet packet;
+    while (m_client.recievePacket(info, packet)) {
+
+        if (info.id == m_client.clientId()) {
+            continue;
+        }
+        auto &player = m_players[info.id];
+        player.isConnected = true;
+
+        std::cout << "Got: " << (int)info.command << std::endl;
+        switch (info.command) {
+            case Command::PlayerPosition:
+                handleRecPlayerPosition(player, packet);
+                break;
+
+            default:
+                break;
+        }
     }
 }
 
@@ -98,6 +120,16 @@ void Application::pollWindowEvents()
                 break;
         }
     }
+}
+
+void Application::handleRecPlayerPosition(Player &player, sf::Packet &packet)
+{
+    float x = 0;
+    float y = 0;
+
+    packet >> x >> y;
+
+    player.sprite.setPosition(x, y);
 }
 
 // http://enet.bespin.org/Tutorial.html

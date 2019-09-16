@@ -95,6 +95,9 @@ void Server::handlePlayerPosition(const RecievedCommandInfo &info,
     packet >> x >> y;
     slot.playerBounds.left = x;
     slot.playerBounds.top = y;
+
+    std::cout << "Player position set: " << x << " " << y << " for player "
+              << (int)info.id << std::endl;
 }
 
 void Server::handleRequestPlayerPositions(const RecievedCommandInfo &info)

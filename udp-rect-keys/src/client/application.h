@@ -6,6 +6,10 @@
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 
+#include <SFML/Network/Packet.hpp>
+
+struct RecievedCommandInfo;
+
 class Application {
   public:
     Application();
@@ -22,6 +26,9 @@ class Application {
         bool isConnected = false;
     };
     void pollWindowEvents();
+    void handleIncomingPacket();
+
+    void handleRecPlayerPosition(Player &player, sf::Packet &packet);
 
     sf::RenderWindow m_window;
     ClientManager m_client;
