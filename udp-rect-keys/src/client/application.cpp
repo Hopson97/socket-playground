@@ -1,7 +1,7 @@
 #include "application.h"
 
-#include <iostream>
 #include <SFML/Window/Event.hpp>
+#include <iostream>
 
 #include "../common/net_helper.h"
 
@@ -25,7 +25,7 @@ void Application::run()
     if (!m_client.isConnected()) {
         return;
     }
-    m_window.create({1280, 720}, "UDP Socket playground");
+    m_window.create({WINDOW_WIDTH, WINDOW_HEIGHT}, "UDP Socket playground");
     m_window.setFramerateLimit(60);
     m_window.setKeyRepeatEnabled(false);
 
@@ -51,6 +51,22 @@ void Application::run()
         m_player.sprite.move(m_player.velocity);
         m_player.velocity.x *= 0.98;
         m_player.velocity.y *= 0.98;
+
+        const float x = m_player.sprite.getPosition().x;
+        const float y = m_player.sprite.getPosition().y;
+
+        if (x + PLAYER_WIDTH > WINDOW_WIDTH) {
+            m_player.sprite.setPosition(WINDOW_WIDTH - PLAYER_WIDTH - 1, y);
+        }
+        if (y + PLAYER_HEIGHT > WINDOW_HEIGHT) {
+            m_player.sprite.setPosition(x, WINDOW_HEIGHT - PLAYER_HEIGHT - 1);
+        }
+        if (x < 0) {
+            m_player.sprite.setPosition(1, y);
+        }
+        if (y < 0) {
+            m_player.sprite.setPosition(x, 1);
+        }
 
         if (timer.getElapsedTime().asMilliseconds() > 20) {
             auto packet = makePacket(Command::KeepAlive, m_client.clientId());
@@ -94,7 +110,6 @@ void Application::handleIncomingPacket()
         auto &player = m_players[info.id];
         player.isConnected = true;
 
-        std::cout << "Got: " << (int)info.command << std::endl;
         switch (info.command) {
             case Command::PlayerPosition:
                 handleRecPlayerPosition(player, packet);

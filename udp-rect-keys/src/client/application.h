@@ -17,6 +17,8 @@ class Application {
     void run();
 
   private:
+    constexpr static unsigned WINDOW_WIDTH = 1280;
+    constexpr static unsigned WINDOW_HEIGHT = 720;
     struct Player {
         Player() { sprite.setSize({PLAYER_WIDTH, PLAYER_HEIGHT}); }
 
