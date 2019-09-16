@@ -14,3 +14,5 @@ struct RecievedCommandInfo {
 sf::Packet makePacket(Command command, ClientId clientId);
 
 RecievedCommandInfo recievePacket(sf::UdpSocket &socket, sf::Packet &packet);
+
+bool isRecievePacket(sf::UdpSocket& socket, RecievedCommandInfo& info, sf::Packet& packet);

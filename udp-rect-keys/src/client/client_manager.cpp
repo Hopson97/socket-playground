@@ -36,10 +36,8 @@ ClientManager::ClientManager(const sf::IpAddress &host, Port port)
     }
 }
 
-void ClientManager::tick()
-{
-    auto packet = makePacket(Command::KeepAlive, m_clientid);
-    send(packet);
+bool ClientManager::recievePacket(RecievedCommandInfo& info, sf::Packet& packet) {
+    return isRecievePacket(m_socket, info, packet);
 }
 
 void ClientManager::send(sf::Packet &packet)

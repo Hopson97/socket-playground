@@ -4,6 +4,7 @@
 #include <SFML/Network/Packet.hpp>
 
 #include <iostream>
+#include <thread>
 
 Server::Server()
 {
@@ -19,11 +20,10 @@ void Server::run()
 {
     m_isRunning = true;
     while (m_isRunning) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
         RecievedCommandInfo info;
         sf::Packet packet;
-        while (m_socket.receive(packet, info.sender, info.senderPort) ==
-               sf::Socket::Done) {
-            packet >> info.command >> info.id;
+        while (isRecievePacket(m_socket, info, packet)) {
             handlePacket(info, packet);
         }
         for (auto &client : m_clientSlots) {

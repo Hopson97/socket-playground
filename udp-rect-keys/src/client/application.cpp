@@ -9,6 +9,7 @@ Application::Application()
     , m_player(m_players[m_client.clientId()])
 {
     m_player.sprite.setPosition({20, 20});
+    m_player.sprite.setFillColor(sf::Color::Red);
 
     if (m_client.isConnected()) {
         m_player.isConnected = true;
@@ -59,6 +60,15 @@ void Application::run()
                    << m_player.sprite.getPosition().y;
 
             timer.restart();
+        }
+        
+        //Recieve
+        {
+            RecievedCommandInfo info;
+            sf::Packet packet;
+            while (m_client.recievePacket(info, packet)) {
+                
+            }
         }
 
         // Draw
