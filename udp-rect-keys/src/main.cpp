@@ -1,15 +1,13 @@
 #include <iostream>
 #include <thread>
+#include <SFML/Network/IpAddress.hpp>
 
 #include "client/application.h"
 #include "server/server.h"
 
-void runServer() {}
-
-void runClient(std::string name) { std::cout << name << std::endl; }
-
 int main(int argc, char **argv)
 {
+    std::cout << sf::IpAddress::getLocalAddress() << std::endl;
     if (argc < 3) {
         std::cout << "Please enter `server/client name`" << std::endl;
         return 0;
