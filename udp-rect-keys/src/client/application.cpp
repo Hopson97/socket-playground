@@ -6,7 +6,7 @@
 #include "../common/net_helper.h"
 
 Application::Application()
-    : m_client(sf::IpAddress::LocalHost, PORT)
+    : m_client(sf::IpAddress::getPublicAddress(), PORT)
     , m_player(m_players[m_client.clientId()])
 {
     m_player.sprite.setPosition({20, 20});
