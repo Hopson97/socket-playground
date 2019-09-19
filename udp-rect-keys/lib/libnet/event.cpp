@@ -3,13 +3,15 @@
 #include <SFML/Network/Packet.hpp>
 #include <SFML/Network/UdpSocket.hpp>
 
+#include <iostream>
+
 namespace net {
     void Event::respond(sf::UdpSocket &socket, EventType type) const
     {
         sf::Packet packet;
         packet << type;
         if (socket.send(packet, details.senderIp, details.senderPort) !=
-            sf::Socket::Done)) {
+            sf::Socket::Done) {
             std::cerr << "Failed to send response packet: " << (int)type;
         }
     }

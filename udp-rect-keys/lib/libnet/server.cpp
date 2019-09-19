@@ -48,6 +48,7 @@ namespace net {
             event.respond(m_socket, Event::EventType::AcceptConnection);
         }
         else {
+            event.respond(m_socket, Event::EventType::RejectConnection);
         }
     }
 

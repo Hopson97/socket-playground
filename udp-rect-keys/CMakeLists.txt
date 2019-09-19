@@ -17,20 +17,26 @@ set(SOURCES
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
+function (set_flags target)
+	#Set C++17
+	target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
+	set_target_properties(${PROJECT_NAME} PROPERTIES CXX_EXTENSIONS OFF)
+
+	#Set flags
+	if(MSVC)
+		target_compile_options(${PROJECT_NAME} PRIVATE 
+			/W4 /WX)
+	else()
+		target_compile_options(${PROJECT_NAME} PRIVATE 
+			-Wall -Wextra -pedantic -Werror)		#Warning flags
+	endif()
+endfunction()
+
 add_subdirectory(lib)
 
-#Set C++17
-target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
-set_target_properties(${PROJECT_NAME} PROPERTIES CXX_EXTENSIONS OFF)
+set_flags(lib)
+set_flags(${PROJECT_NAME})
 
-#Set flags
-if(MSVC)
-  	target_compile_options(${PROJECT_NAME} PRIVATE 
-    	/W4 /WX)
-else()
-  	target_compile_options(${PROJECT_NAME} PRIVATE 
-		-Wall -Wextra -pedantic -Werror)		#Warning flags
-endif()
 
 #Set module path
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake_modules" ${CMAKE_MODULE_PATH})
