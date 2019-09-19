@@ -4,6 +4,16 @@
 #include <SFML/Network/UdpSocket.hpp>
 
 namespace net {
+    void Event::respond(sf::UdpSocket &socket, EventType type) const
+    {
+        sf::Packet packet;
+        packet << type;
+        if (socket.send(packet, details.senderIp, details.senderPort) !=
+            sf::Socket::Done)) {
+            std::cerr << "Failed to send response packet: " << (int)type;
+        }
+    }
+
     sf::Packet &operator<<(sf::Packet &packet, Event::EventType &type)
     {
         packet << static_cast<uint16_t>(type);

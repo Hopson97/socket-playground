@@ -5,8 +5,8 @@ namespace sf {
     class UdpSocket;
 } // namespace sf
 
-#include <cstdint>
 #include <SFML/Network/IpAddress.hpp>
+#include <cstdint>
 
 namespace net {
     using Port = std::uint16_t;
@@ -17,7 +17,10 @@ namespace net {
             Connect,
             DataRecieve,
             Disconnect,
-            KeepAlive
+            KeepAlive,
+
+            RejectConnection,
+            AcceptConnection,
         };
 
         struct RequestDetails {
@@ -25,6 +28,8 @@ namespace net {
             sf::IpAddress senderIp;
             Port senderPort;
         };
+
+        void respond(sf::UdpSocket &socket, EventType type) const;
 
         friend sf::Packet &operator<<(sf::Packet &packet, EventType &type);
         friend sf::Packet &operator>>(sf::Packet &packet, EventType &type);
