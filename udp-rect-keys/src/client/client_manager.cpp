@@ -32,7 +32,7 @@ ClientManager::ClientManager(const sf::IpAddress &host, Port port)
                 std::cout << "Connection refused\n";
                 break;
 
-            default: 
+            default:
                 break;
         }
         m_socket.setBlocking(false);

@@ -3,6 +3,7 @@
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Network/UdpSocket.hpp>
 #include <SFML/System/Clock.hpp>
+#include <libnet/server.h>
 
 #include <array>
 
@@ -22,6 +23,8 @@ class Server final {
     void run();
 
   private:
+    net::Server m_server;
+
     struct ClientConnection {
         ClientId id;
         sf::Time lastUpdate;
