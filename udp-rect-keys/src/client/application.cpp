@@ -29,24 +29,23 @@ void Application::run()
     m_window.setFramerateLimit(60);
     m_window.setKeyRepeatEnabled(false);
 
-    constexpr unsigned TPS = 30; //ticks per seconds
-    const sf::Time     timePerUpdate = sf::seconds(1.0f / float(TPS));
+    constexpr unsigned TPS = 30; // ticks per seconds
+    const sf::Time timePerUpdate = sf::seconds(1.0f / float(TPS));
 
     sf::Clock timer;
     sf::Clock netTimer;
     auto lastTime = sf::Time::Zero;
-    auto lag      = sf::Time::Zero;
+    auto lag = sf::Time::Zero;
 
     while (m_window.isOpen()) {
-        //Get times
+        // Get times
         auto time = timer.getElapsedTime();
         auto elapsed = time - lastTime;
         lastTime = time;
         lag += elapsed;
 
         input();
-        while (lag >= timePerUpdate)
-        {
+        while (lag >= timePerUpdate) {
             lag -= timePerUpdate;
             update(timer, elapsed);
         }
@@ -56,7 +55,7 @@ void Application::run()
 
             packet = makePacket(Command::PlayerPosition, m_client.clientId());
             packet << m_player.sprite.getPosition().x
-                << m_player.sprite.getPosition().y;
+                   << m_player.sprite.getPosition().y;
             m_client.send(packet);
 
             netTimer.restart();
@@ -65,7 +64,7 @@ void Application::run()
                 makePacket(Command::GetPlayerPositions, m_client.clientId());
             m_client.send(packet);
         }
-        
+
         render();
     }
 }
@@ -89,11 +88,11 @@ void Application::input()
     }
 }
 
-void Application::update(sf::Clock& elapsed, sf::Time delta)
+void Application::update(sf::Clock &elapsed, sf::Time delta)
 {
     (void)delta;
     (void)elapsed;
-    
+
     m_player.sprite.move(m_player.velocity);
     m_player.velocity.x *= 0.98;
     m_player.velocity.y *= 0.98;
@@ -114,15 +113,18 @@ void Application::update(sf::Clock& elapsed, sf::Time delta)
         m_player.sprite.setPosition(x, 1);
     }
 
-    for (auto& player : m_players) {
-        if (&player == &m_player) continue;
+    for (auto &player : m_players) {
+        if (&player == &m_player)
+            continue;
         player.sprite.setPosition(player.nextPosition.x, player.nextPosition.y);
         auto lerp = [](float a, float b, float t) {
             return (1 - t) * a + t * b;
         };
         player.lerpValue += 0.5 * delta.asSeconds();
-        auto newX = lerp(player.sprite.getPosition().x, player.nextPosition.x, player.lerpValue);
-        auto newY = lerp(player.sprite.getPosition().y, player.nextPosition.y, player.lerpValue);
+        auto newX = lerp(player.sprite.getPosition().x, player.nextPosition.x,
+                         player.lerpValue);
+        auto newY = lerp(player.sprite.getPosition().y, player.nextPosition.y,
+                         player.lerpValue);
 
         player.sprite.setPosition(newX, newY);
     }

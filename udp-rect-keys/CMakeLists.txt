@@ -6,11 +6,18 @@ project(udp-rects VERSION 1.0)
 set(SOURCES
 	src/main.cpp
 	src/client/application.cpp
+	src/client/client_manager.cpp
+	src/client/input/keyboard.cpp
+
+	src/server/server.cpp
+
+	src/common/commands.cpp
+    src/common/net_helper.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-add_subdirectory(src)
+add_subdirectory(lib)
 
 #Set C++17
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
@@ -34,9 +41,7 @@ find_package(SFML REQUIRED network graphics window system)
 
 #Finally
 target_link_libraries(${PROJECT_NAME} 
-	common
-	server
-	client
+	net
     Threads::Threads 
     ${SFML_LIBRARIES} 
     ${SFML_DEPENDENCIES}

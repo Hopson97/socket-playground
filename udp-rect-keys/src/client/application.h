@@ -8,6 +8,8 @@
 
 #include <SFML/Network/Packet.hpp>
 
+#include <libnet/client.h>
+
 struct RecievedCommandInfo;
 
 class Application {
@@ -31,9 +33,8 @@ class Application {
         bool isConnected = false;
     };
     void input();
-    void update(sf::Clock& elapsed, sf::Time delta);
+    void update(sf::Clock &elapsed, sf::Time delta);
     void render();
-
 
     void pollWindowEvents();
     void handleIncomingPacket();

@@ -31,6 +31,9 @@ ClientManager::ClientManager(const sf::IpAddress &host, Port port)
             case Command::RejectConnection:
                 std::cout << "Connection refused\n";
                 break;
+
+            default: 
+                break;
         }
         m_socket.setBlocking(false);
     }

@@ -10,7 +10,7 @@ Server::Server()
 {
     m_socket.bind(PORT);
     m_socket.setBlocking(false);
-    for (int i = 0; i < m_clientSlots.size(); i++) {
+    for (int i = 0; i < (int)m_clientSlots.size(); i++) {
         m_clientSlots[i].id = i;
     }
     std::cout << "Server has been set up\n";
@@ -115,7 +115,7 @@ void Server::handleRequestPlayerPositions(const RecievedCommandInfo &info)
 
 std::size_t Server::emptySlot()
 {
-    for (int i = 0; i < m_clientSlots.size(); i++) {
+    for (int i = 0; i < (int)m_clientSlots.size(); i++) {
         if (!m_clientSlots[i].isConnected) {
             return i;
         }

@@ -1,6 +1,6 @@
+#include <SFML/Network/IpAddress.hpp>
 #include <iostream>
 #include <thread>
-#include <SFML/Network/IpAddress.hpp>
 
 #include "client/application.h"
 #include "server/server.h"

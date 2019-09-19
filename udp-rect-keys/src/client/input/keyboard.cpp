@@ -31,6 +31,4 @@ bool Keyboard::keyReleased(sf::Keyboard::Key key) const
     return m_recentlyReleased == key;
 }
 
-void Keyboard::resetKeys() {
-    std::fill(m_keys.begin(), m_keys.end(), false);
-}
+void Keyboard::resetKeys() { std::fill(m_keys.begin(), m_keys.end(), false); }

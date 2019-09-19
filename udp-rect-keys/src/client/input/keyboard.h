@@ -16,7 +16,7 @@ class Keyboard {
 
   private:
     void resetKeys();
-    
+
     std::array<bool, sf::Keyboard::KeyCount> m_keys;
     sf::Keyboard::Key m_recentlyReleased;
 };
