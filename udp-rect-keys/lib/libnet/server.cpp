@@ -24,9 +24,11 @@ namespace net {
                     break;
 
                 case Event::EventType::KeepAlive:
+                    keepAlive(event);
                     break;
 
                 case Event::EventType::DataRecieve:
+                    keepAlive(event);
                     break;
 
                 default:
@@ -52,6 +54,11 @@ namespace net {
         }
     }
 
+    void Server::keepAlive(const Event& event) {
+        auto& client = getClient(event.details.senderId);
+        client.lastUpdate = m_clock.getElapsedTime();
+    }
+
     std::size_t Server::emptySlot() const
     {
         for (std::size_t i = 0; i < MAX_CONNECTIONS; i++) {
@@ -60,6 +67,10 @@ namespace net {
             }
         }
         return MAX_CONNECTIONS + 1;
+    }
+
+    Server::ConnectedClient& Server::getClient(ClientId id) {
+        return m_clients[static_cast<std::size_t>(id)];
     }
 
 } // namespace net

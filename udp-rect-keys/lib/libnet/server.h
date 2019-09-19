@@ -33,7 +33,11 @@ namespace net {
 
       private:
         void handleIncomingConnection(const Event &event);
+        
+        void keepAlive(const Event& event);
+
         std::size_t emptySlot() const;
+        ConnectedClient& getClient(ClientId id);
 
         std::array<ConnectedClient, MAX_CONNECTIONS> m_clients;
         std::array<bool, MAX_CONNECTIONS> m_clientConnected;
