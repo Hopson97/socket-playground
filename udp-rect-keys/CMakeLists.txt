@@ -34,7 +34,7 @@ endfunction()
 
 add_subdirectory(lib)
 
-set_flags(lib)
+set_flags(net)
 set_flags(${PROJECT_NAME})
 
 
