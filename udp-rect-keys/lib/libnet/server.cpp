@@ -11,6 +11,16 @@ namespace net {
         m_socket.setBlocking(false);
     }
 
+    void Server::onClientConnect(Server::OnEventFunction function)
+    {
+        m_onConnect = function;
+    }
+
+    void Server::onClientDisconnect(Server::OnEventFunction function)
+    {
+        m_onDisconnect = function;
+    }
+
     void Server::handleIncomingConnection(const Event &event)
     {
         if (auto slot = emptySlot(); slot < MAX_CONNECTIONS) {
@@ -20,6 +30,7 @@ namespace net {
             m_clients[slot].lastUpdate = m_clock.getElapsedTime();
 
             event.respond(m_socket, Event::EventType::AcceptConnection);
+            m_onConnect(event.details);
         }
         else {
             event.respond(m_socket, Event::EventType::RejectConnection);

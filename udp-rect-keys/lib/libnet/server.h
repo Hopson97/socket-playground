@@ -3,6 +3,7 @@
 #include <SFML/Network/IpAddress.hpp>
 #include <SFML/Network/UdpSocket.hpp>
 #include <SFML/System/Clock.hpp>
+#include <functional>
 #include <array>
 
 #include "event.h"
@@ -15,6 +16,8 @@ namespace net {
      */
     class Server final {
         static constexpr std::size_t MAX_CONNECTIONS = 4;
+
+        using OnEventFunction = std::function<void(const Event::Details& details)>;
 
         /**
          * @brief Each connected client to this server is considered a
@@ -29,9 +32,14 @@ namespace net {
       public:
         Server();
 
-        template<typename CommandEnum>
-        bool recievePacket(Event &event, sf::Packet &packet, CommandEnum& command)
+        void onClientConnect(OnEventFunction function);
+        void onClientDisconnect(OnEventFunction function);
+
+        template <typename CommandEnum>
+        bool recievePacket(Event::Details &details, sf::Packet &packet,
+                           CommandEnum &command)
         {
+            Event event;
             if (receiveNetEvent(m_socket, packet, event)) {
                 switch (event.type) {
                     case Event::EventType::Connect:
@@ -39,6 +47,8 @@ namespace net {
                         break;
 
                     case Event::EventType::Disconnect:
+                        //handle disconnect...
+                        m_onDisconnect(event.details);
                         break;
 
                     case Event::EventType::KeepAlive:
@@ -48,6 +58,7 @@ namespace net {
                     case Event::EventType::DataRecieve:
                         keepAlive(event);
                         packet >> command;
+                        details = event.details;
                         break;
 
                     default:
@@ -64,6 +75,9 @@ namespace net {
         void handleIncomingConnection(const Event &event);
 
         void keepAlive(const Event &event);
+
+        OnEventFunction m_onConnect;
+        OnEventFunction m_onDisconnect;
 
         std::size_t emptySlot() const;
         ConnectedClient &getClient(ClientId id);

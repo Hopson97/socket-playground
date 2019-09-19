@@ -10,6 +10,7 @@ ClientManager::ClientManager(const sf::IpAddress &host, Port port)
     : m_hostIp(host)
     , m_hostPort(port)
 {
+    /*
     // Send connection request
     auto packet = makePacket(Command::RequestConnection, 0);
     send(packet);
@@ -36,7 +37,7 @@ ClientManager::ClientManager(const sf::IpAddress &host, Port port)
                 break;
         }
         m_socket.setBlocking(false);
-    }
+    }*/
 }
 
 bool ClientManager::recievePacket(RecievedCommandInfo &info, sf::Packet &packet)

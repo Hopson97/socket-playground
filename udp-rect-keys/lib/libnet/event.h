@@ -33,7 +33,7 @@ namespace net {
         /**
          * @brief Info about the sender of the event
          */
-        struct RequestDetails {
+        struct Details {
             ClientId senderId;
             sf::IpAddress senderIp;
             Port senderPort;
@@ -51,7 +51,7 @@ namespace net {
         friend sf::Packet &operator>>(sf::Packet &packet, EventType &type);
 
         EventType type;
-        RequestDetails details;
+        Details details;
     }; // struct Event
 
     /**

@@ -8,20 +8,29 @@
 
 #include <libnet/event.h>
 
-Server::Server()
+Server::Server() 
 {
+    m_server.onClientConnect([](const net::Event::Details& details) {
+        const auto id = details.senderId;
+        (void)id;
+    });
 
+    m_server.onClientDisconnect([](const net::Event::Details& details) {
+        const auto id = details.senderId;
+        (void)id;
+    });
 }
 
-void Server::run() {
+void Server::run()
+{
     while (m_isRunning) {
         sf::Packet packet;
-        net::Event event;
+        net::Event::Details event;
         Command command;
         while (m_server.recievePacket(event, packet, command)) {
             std::this_thread::sleep_for(std::chrono::milliseconds(16));
-            switch(command) {
-                default: 
+            switch (command) {
+                default:
                     break;
             }
         }

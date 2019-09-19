@@ -49,6 +49,7 @@ void Application::run()
             lag -= timePerUpdate;
             update(timer, elapsed);
         }
+        /*
         if (netTimer.getElapsedTime().asMilliseconds() > 20) {
             auto packet = makePacket(Command::KeepAlive, m_client.clientId());
             m_client.send(packet);
@@ -64,6 +65,7 @@ void Application::run()
                 makePacket(Command::GetPlayerPositions, m_client.clientId());
             m_client.send(packet);
         }
+        */
 
         render();
     }
