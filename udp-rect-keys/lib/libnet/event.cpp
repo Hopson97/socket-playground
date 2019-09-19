@@ -18,13 +18,13 @@ namespace net {
 
     sf::Packet &operator<<(sf::Packet &packet, Event::EventType &type)
     {
-        packet << static_cast<uint16_t>(type);
+        packet << static_cast<uint8_t>(type);
         return packet;
     }
 
     sf::Packet &operator>>(sf::Packet &packet, Event::EventType &type)
     {
-        uint16_t commandId;
+        uint8_t commandId;
         packet >> commandId;
         type = static_cast<Event::EventType>(commandId);
         return packet;

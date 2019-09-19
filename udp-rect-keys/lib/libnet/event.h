@@ -20,7 +20,7 @@ namespace net {
         /**
          * @brief The different event types
          */
-        enum class EventType : uint16_t {
+        enum class EventType : uint8_t {
             Connect,
             DataRecieve,
             Disconnect,
@@ -41,7 +41,7 @@ namespace net {
 
         /**
          * @brief Sends a quick response back to the sender of the net event
-         * 
+         *
          * @param socket The socket to send the response with
          * @param type The response type
          */
@@ -52,11 +52,11 @@ namespace net {
 
         EventType type;
         RequestDetails details;
-    };//struct Event
+    }; // struct Event
 
     /**
-     * @brief Receives an event via a UDP socket    
-     * 
+     * @brief Receives an event via a UDP socket
+     *
      * @param socket The socket to receive the event on
      * @param packet The packet that was received
      * @param event The event that was recieved

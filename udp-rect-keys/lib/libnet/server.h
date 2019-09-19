@@ -17,7 +17,7 @@ namespace net {
         static constexpr std::size_t MAX_CONNECTIONS = 4;
 
         /**
-         * @brief Each connected client to this server is considered a 
+         * @brief Each connected client to this server is considered a
          * ConnectedClient
          */
         struct ConnectedClient {
@@ -29,15 +29,44 @@ namespace net {
       public:
         Server();
 
-        bool recievePacket(Event &event);
+        template<typename CommandEnum>
+        bool recievePacket(Event &event, sf::Packet &packet, CommandEnum& command)
+        {
+            if (receiveNetEvent(m_socket, packet, event)) {
+                switch (event.type) {
+                    case Event::EventType::Connect:
+                        handleIncomingConnection(event);
+                        break;
+
+                    case Event::EventType::Disconnect:
+                        break;
+
+                    case Event::EventType::KeepAlive:
+                        keepAlive(event);
+                        break;
+
+                    case Event::EventType::DataRecieve:
+                        keepAlive(event);
+                        packet >> command;
+                        break;
+
+                    default:
+                        break;
+                }
+                return true;
+            }
+            return false;
+        }
+
+        bool recievePacket(Event &event, sf::Packet &packet);
 
       private:
         void handleIncomingConnection(const Event &event);
-        
-        void keepAlive(const Event& event);
+
+        void keepAlive(const Event &event);
 
         std::size_t emptySlot() const;
-        ConnectedClient& getClient(ClientId id);
+        ConnectedClient &getClient(ClientId id);
 
         std::array<ConnectedClient, MAX_CONNECTIONS> m_clients;
         std::array<bool, MAX_CONNECTIONS> m_clientConnected;

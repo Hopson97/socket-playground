@@ -24,7 +24,7 @@ class Server final {
 
   private:
     net::Server m_server;
-
+/*
     struct ClientConnection {
         ClientId id;
         sf::Time lastUpdate;
@@ -50,5 +50,6 @@ class Server final {
     sf::UdpSocket m_socket;
     sf::Clock m_interalClock;
     std::array<ClientConnection, CLIENT_COUNT> m_clientSlots;
+    */
     bool m_isRunning = true;
 };

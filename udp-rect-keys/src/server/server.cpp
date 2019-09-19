@@ -6,6 +6,28 @@
 #include <iostream>
 #include <thread>
 
+#include <libnet/event.h>
+
+Server::Server()
+{
+
+}
+
+void Server::run() {
+    while (m_isRunning) {
+        sf::Packet packet;
+        net::Event event;
+        Command command;
+        while (m_server.recievePacket(event, packet, command)) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(16));
+            switch(command) {
+                default: 
+                    break;
+            }
+        }
+    }
+}
+/*
 Server::Server()
 {
     m_socket.bind(PORT);
@@ -130,4 +152,4 @@ void Server::ClientConnection::init(const RecievedCommandInfo &info,
     this->port = info.senderPort;
     this->id = id;
     this->isConnected = true;
-}
+}*/

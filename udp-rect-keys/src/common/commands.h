@@ -6,13 +6,6 @@
 #include "constants.h"
 
 enum class Command : uint16_t {
-    // General commands
-    RequestConnection,
-    AcceptConnection,
-    RejectConnection,
-    KeepAlive,
-    Disconnect,
-
     // Game play
     PlayerPosition,
     BallPosition,
