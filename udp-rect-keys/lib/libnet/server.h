@@ -15,8 +15,6 @@ namespace net {
      * @brief The server that clients can connect to
      */
     class Server final {
-        static constexpr std::size_t MAX_CONNECTIONS = 4;
-
         using OnEventFunction = std::function<void(const Event::Details& details)>;
 
         /**
@@ -30,17 +28,29 @@ namespace net {
         };
 
       public:
+        static constexpr std::size_t MAX_CONNECTIONS = 4;
+
         Server();
 
         void onClientConnect(OnEventFunction function);
         void onClientDisconnect(OnEventFunction function);
 
-        template <typename CommandEnum>
-        bool recievePacket(Event::Details &details, sf::Packet &packet,
-                           CommandEnum &command)
+        /**
+         * @brief Handles stream of all the packets being recieved
+         * 
+         * @tparam CommandEnum 
+         * @tparam Callback 
+         * @param callback 
+         * @return true 
+         * @return false 
+         */
+        template <typename CommandEnum, typename Callback>
+        bool whileRecievePacket(Callback callback)
         {
             Event event;
-            if (receiveNetEvent(m_socket, packet, event)) {
+            sf::Packet packet;
+            CommandEnum command;
+            while (receiveNetEvent(m_socket, packet, event)) {
                 switch (event.type) {
                     case Event::EventType::Connect:
                         handleIncomingConnection(event);
@@ -58,7 +68,7 @@ namespace net {
                     case Event::EventType::DataRecieve:
                         keepAlive(event);
                         packet >> command;
-                        details = event.details;
+                        callback(event.details, packet, command);
                         break;
 
                     default:

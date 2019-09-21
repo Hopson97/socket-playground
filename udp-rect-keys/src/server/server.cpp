@@ -8,33 +8,46 @@
 
 #include <libnet/event.h>
 
-Server::Server() 
+Server::Server()
 {
-    m_server.onClientConnect([](const net::Event::Details& details) {
+    m_server.onClientConnect([this](const net::Event::Details &details) {
         const auto id = details.senderId;
-        (void)id;
+        m_players[static_cast<std::size_t>(id)].connected = true;
     });
 
-    m_server.onClientDisconnect([](const net::Event::Details& details) {
+    m_server.onClientDisconnect([this](const net::Event::Details &details) {
         const auto id = details.senderId;
-        (void)id;
+        m_players[static_cast<std::size_t>(id)].connected = false;
     });
 }
 
 void Server::run()
 {
     while (m_isRunning) {
-        sf::Packet packet;
-        net::Event::Details event;
-        Command command;
-        while (m_server.recievePacket(event, packet, command)) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(16));
-            switch (command) {
-                default:
-                    break;
-            }
-        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        m_server.whileRecievePacket<Command>(
+            [this](const net::Event::Details &details, sf::Packet &packet,
+                   Command command) {
+                switch (command) {
+                    case Command::PlayerPosition:
+                        handlePlayerPosition(details.senderId, packet);
+                        break;
+
+                    default:
+                        break;
+                }
+            });
     }
+}
+
+void Server::handlePlayerPosition(ClientId id, sf::Packet& packet)
+{
+    auto &player = m_players[static_cast<std::size_t>(id)];
+    float x;
+    float y;
+    packet >> x >> y;
+    player.rect.left = x;
+    player.rect.top = y;
 }
 /*
 Server::Server()
@@ -116,18 +129,9 @@ void Server::handleIncomingConection(const RecievedCommandInfo &info)
         }
     }
 }
+*/
 
-void Server::handlePlayerPosition(const RecievedCommandInfo &info,
-                                  sf::Packet &packet)
-{
-    auto &slot = m_clientSlots[static_cast<std::size_t>(info.id)];
-    float x;
-    float y;
-    packet >> x >> y;
-    slot.playerBounds.left = x;
-    slot.playerBounds.top = y;
-}
-
+/*
 void Server::handleRequestPlayerPositions(const RecievedCommandInfo &info)
 {
     auto &slot = m_clientSlots[static_cast<std::size_t>(info.id)];
