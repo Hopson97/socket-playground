@@ -5,5 +5,9 @@
 
 namespace net {
     class Client final {
+        public:
+
+        private:
+            
     };
 } // namespace net

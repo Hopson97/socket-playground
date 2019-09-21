@@ -16,7 +16,7 @@ namespace net {
      * @brief An 'Event' sent via UDP sockets, holding information about the
      * event type and the sender
      */
-    struct Event {
+    struct Event final {
         /**
          * @brief The different event types
          */
