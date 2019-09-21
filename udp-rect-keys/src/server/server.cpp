@@ -40,7 +40,7 @@ void Server::run()
     }
 }
 
-void Server::handlePlayerPosition(ClientId id, sf::Packet& packet)
+void Server::handlePlayerPosition(ClientId id, sf::Packet &packet)
 {
     auto &player = m_players[static_cast<std::size_t>(id)];
     float x;

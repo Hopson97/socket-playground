@@ -78,9 +78,7 @@ namespace net {
             }
             return false;
         }
-
-        bool recievePacket(Event &event, sf::Packet &packet);
-
+        
       private:
         void handleIncomingConnection(const Event &event);
 

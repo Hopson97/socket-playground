@@ -27,7 +27,7 @@ class Server final {
 
     std::array<Player, net::Server::MAX_CONNECTIONS> m_players;
 
-    void handlePlayerPosition(ClientId id, sf::Packet& packet);
+    void handlePlayerPosition(ClientId id, sf::Packet &packet);
     /*
         struct ClientConnection {
             ClientId id;
