@@ -25,6 +25,7 @@ namespace net {
                     case Event::EventType::AcceptConnection:
                         m_id = event.details.id;
                         m_socket.setBlocking(false);
+                        m_isConnected = true;
                         break;
 
                     case Event::EventType::RejectConnection:
@@ -45,16 +46,14 @@ namespace net {
                sf::Socket::Done;
     }
 
-    bool Client::receive(sf::Packet &packet)
-    {
-        return m_socket.receive(packet, m_recievedIp, m_recievedPort) ==
-               sf::Socket::Done;
-    }
-
     void Client::handlePeerConnection(const Event &event)
     {
 
         m_onPeerConnect(event.details);
+    }
+
+    bool Client::connected() const {
+        return m_isConnected;
     }
 
     ClientId Client::getClientId() const { return m_id; }

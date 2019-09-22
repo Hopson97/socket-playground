@@ -55,8 +55,9 @@ namespace net {
             }
             return false;
         }
+
         bool send(sf::Packet &packet);
-        bool receive(sf::Packet &packet);
+        bool connected() const;
 
         ClientId getClientId() const;
 
@@ -71,6 +72,8 @@ namespace net {
 
         OnEventFunction m_onPeerConnect;
         OnEventFunction m_onPeerDisconnect;
+
+        bool m_isConnected = false;
 
         // Used for receiving packets
         sf::IpAddress m_recievedIp;

@@ -24,9 +24,9 @@ Application::Application()
 
 void Application::run()
 {
-    // if (!m_client.isConnected()) {
-    //    return;
-    //}
+     if (!m_client.connected()) {
+        return;
+    }
     m_window.create({WINDOW_WIDTH, WINDOW_HEIGHT}, "UDP Socket playground");
     m_window.setFramerateLimit(60);
     m_window.setKeyRepeatEnabled(false);
