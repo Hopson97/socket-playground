@@ -24,7 +24,7 @@ namespace net {
          */
         enum class EventType : uint8_t {
             Connect,
-            DataRecieve,
+            Data,
             Disconnect,
             KeepAlive,
 
@@ -50,7 +50,7 @@ namespace net {
         void respond(sf::UdpSocket &socket, EventType type) const;
         void respond(sf::UdpSocket &socket, EventType type, ClientId id) const;
 
-        friend sf::Packet &operator<<(sf::Packet &packet, EventType &type);
+        friend sf::Packet &operator<<(sf::Packet &packet, EventType type);
         friend sf::Packet &operator>>(sf::Packet &packet, EventType &type);
 
         EventType type;

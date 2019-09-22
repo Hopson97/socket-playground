@@ -42,7 +42,7 @@ namespace net {
                         m_onPeerDisconnect(event.details);
                         break;
 
-                    case Event::EventType::DataRecieve:
+                    case Event::EventType::Data:
                         packet >> command;
                         callback(event.details, packet, command);
                         break;
@@ -56,6 +56,8 @@ namespace net {
         }
         bool send(sf::Packet &packet);
         bool receive(sf::Packet &packet);
+
+        ClientId getClientId() const;
 
       private:
         void handlePeerConnection(const Event &event);

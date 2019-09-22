@@ -21,7 +21,7 @@ class Application {
   private:
     constexpr static unsigned WINDOW_WIDTH = 400;
     constexpr static unsigned WINDOW_HEIGHT = 200;
-    /*
+
     struct Player {
         Player() { sprite.setSize({PLAYER_WIDTH, PLAYER_HEIGHT}); }
 
@@ -32,7 +32,7 @@ class Application {
         float lerpValue;
 
         bool isConnected = false;
-    };*/
+    };
     void input();
     void update(sf::Clock &elapsed, sf::Time delta);
     void render();
@@ -40,15 +40,15 @@ class Application {
     void pollWindowEvents();
     /*
     void handleIncomingPacket();
+*/
+    void handlePlayerPosition(Player &player, sf::Packet &packet);
 
-    void handleRecPlayerPosition(Player &player, sf::Packet &packet);
-
-
-    ClientManager m_client;
-
+    /*
+        ClientManager m_client;
+    */
     Player &m_player;
     std::array<Player, CLIENT_COUNT> m_players;
-*/
+
     sf::RenderWindow m_window;
     Keyboard m_keyboard;
     net::Client m_client;

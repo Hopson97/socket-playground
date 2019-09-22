@@ -57,4 +57,8 @@ namespace net {
 
         m_onPeerConnect(event.details);
     }
+
+    ClientId Client::getClientId() const {
+        return m_id;
+    }
 } // namespace net

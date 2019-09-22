@@ -62,7 +62,7 @@ namespace net {
                         keepAlive(event);
                         break;
 
-                    case Event::EventType::DataRecieve:
+                    case Event::EventType::Data:
                         keepAlive(event);
                         packet >> command;
                         callback(event.details, packet, command);

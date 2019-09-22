@@ -32,7 +32,7 @@ namespace net {
         ::respond(socket, details, packet);
     }
 
-    sf::Packet &operator<<(sf::Packet &packet, Event::EventType &type)
+    sf::Packet &operator<<(sf::Packet &packet, Event::EventType type)
     {
         packet << static_cast<uint8_t>(type);
         return packet;

@@ -9,10 +9,10 @@ namespace net {
     sf::Packet makePacket(Event::EventType event, ClientId id);
 
     template <typename T>
-    sf::Packet makePacket(Event::EventType event, ClientId id, T command)
+    sf::Packet makePacket(ClientId id, T command)
     {
         sf::Packet packet;
-        packet << event << id << command;
+        packet << Event::EventType::Data << id << command;
         return packet;
     }
 } // namespace net
