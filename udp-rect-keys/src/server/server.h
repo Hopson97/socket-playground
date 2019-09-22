@@ -14,6 +14,7 @@ struct RecievedCommandInfo;
 class Server final {
     struct Player {
         sf::FloatRect rect;
+        net::ClientId id;
         bool connected = false;
     };
 
@@ -28,6 +29,7 @@ class Server final {
     std::array<Player, net::Server::MAX_CONNECTIONS> m_players;
 
     void handlePlayerPosition(ClientId id, sf::Packet &packet);
+    void handleRequestPlayerPositions(ClientId id);
     /*
         struct ClientConnection {
             ClientId id;

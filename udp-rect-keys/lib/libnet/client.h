@@ -5,6 +5,7 @@
 #include <SFML/System/Clock.hpp>
 #include <array>
 #include <functional>
+#include <iostream>
 
 #include "event.h"
 

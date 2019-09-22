@@ -5,6 +5,7 @@
 #include <SFML/System/Clock.hpp>
 #include <array>
 #include <functional>
+#include <iostream>
 
 #include "event.h"
 
@@ -75,6 +76,8 @@ namespace net {
             }
             return false;
         }
+
+        void sendPacketToPeer(ClientId peerId, sf::Packet &packet);
 
       private:
         void handleIncomingConnection(const Event &event);

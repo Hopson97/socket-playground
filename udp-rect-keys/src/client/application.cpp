@@ -14,7 +14,12 @@ Application::Application()
                [this](const net::Event::Details &details) {
                    std::cout << details.senderIp.toString();
                })
+    , m_player(m_players[m_client.getClientId()])
 {
+    m_player.sprite.setPosition(0, 0);
+    m_player.isConnected = true;
+
+    std::cout << "Client set up! ID: " << (int)m_client.getClientId() << '\n';
 }
 
 void Application::run()
@@ -50,7 +55,9 @@ void Application::run()
         m_client.whileRecievePacket<Command>(
             [this](const net::Event::Details &details, sf::Packet &packet,
                    Command command) {
-                auto &player = m_players[details.id];
+                auto &player = m_players[static_cast<net::ClientId>(details.id)];
+                player.isConnected = true;
+                std::cout << "Got some info from " << (int)details.id << '\n';
                 switch (command) {
                     case Command::PlayerPosition:
                         handlePlayerPosition(player, packet);
@@ -68,6 +75,11 @@ void Application::run()
                    << m_player.sprite.getPosition().y;
             m_client.send(packet);
 
+            netTimer.restart();
+
+            packet = net::makePacket(m_client.getClientId(),
+                                     Command::GetPlayerPositions);
+            m_client.send(packet);
             netTimer.restart();
         }
 
@@ -135,7 +147,7 @@ void Application::update(sf::Clock &elapsed, sf::Time delta)
         player.sprite.setPosition(newX, newY);
     }
 
-   // handleIncomingPacket();
+    // handleIncomingPacket();
 }
 
 void Application::render()
@@ -193,6 +205,7 @@ void Application::pollWindowEvents()
 
 void Application::handlePlayerPosition(Player &player, sf::Packet &packet)
 {
+    std::cout << "Player position received\n";
     packet >> player.nextPosition.x >> player.nextPosition.y;
     player.lerpValue = 0;
 }

@@ -13,6 +13,15 @@ namespace net {
     {
         m_socket.bind(54321);
         m_socket.setBlocking(false);
+        m_clientConnected.fill(false);
+    }
+
+    void Server::sendPacketToPeer(ClientId peerId, sf::Packet &packet)
+    {
+        if (m_clientConnected[peerId]) {
+            auto &client = getClient(peerId);
+            m_socket.send(packet, client.address, client.port);
+        }
     }
 
     void Server::handleIncomingConnection(const Event &event)
@@ -25,7 +34,8 @@ namespace net {
 
             event.respond(m_socket, Event::EventType::AcceptConnection,
                           static_cast<ClientId>(slot));
-            m_onConnect(event.details);
+            
+            m_onConnect({event.details.senderIp, event.details.senderPort, static_cast<ClientId>(slot)});
         }
         else {
             event.respond(m_socket, Event::EventType::RejectConnection);

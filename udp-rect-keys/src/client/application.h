@@ -42,14 +42,12 @@ class Application {
     void handleIncomingPacket();
 */
     void handlePlayerPosition(Player &player, sf::Packet &packet);
+    
+    net::Client m_client;
 
-    /*
-        ClientManager m_client;
-    */
     Player &m_player;
     std::array<Player, CLIENT_COUNT> m_players;
 
     sf::RenderWindow m_window;
     Keyboard m_keyboard;
-    net::Client m_client;
 };

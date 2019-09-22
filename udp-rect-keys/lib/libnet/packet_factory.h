@@ -8,8 +8,7 @@ namespace net {
     sf::Packet makePacket(Event::EventType event);
     sf::Packet makePacket(Event::EventType event, ClientId id);
 
-    template <typename T>
-    sf::Packet makePacket(ClientId id, T command)
+    template <typename T> sf::Packet makePacket(ClientId id, T command)
     {
         sf::Packet packet;
         packet << Event::EventType::Data << id << command;

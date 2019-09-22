@@ -7,18 +7,23 @@
 #include <thread>
 
 #include <libnet/event.h>
+#include <libnet/packet_factory.h>
 
 Server::Server()
     : m_server(
           [this](const net::Event::Details &details) {
-              const auto id = details.id;
-              m_players[static_cast<std::size_t>(id)].connected = true;
+              auto &player = m_players[static_cast<std::size_t>(details.id)];
+              player.connected = true;
+              player.id = details.id;
+              std::cout << "Player connected!\n";
+              std::cout << "ID: " << (int)player.id;
           },
           [this](const net::Event::Details &details) {
               const auto id = details.id;
               m_players[static_cast<std::size_t>(id)].connected = false;
           })
 {
+  
 }
 
 void Server::run()
@@ -31,6 +36,10 @@ void Server::run()
                 switch (command) {
                     case Command::PlayerPosition:
                         handlePlayerPosition(details.id, packet);
+                        break;
+
+                    case Command::GetPlayerPositions:
+                        handleRequestPlayerPositions(details.id);
                         break;
 
                     default:
@@ -48,6 +57,19 @@ void Server::handlePlayerPosition(ClientId id, sf::Packet &packet)
     packet >> x >> y;
     player.rect.left = x;
     player.rect.top = y;
+}
+
+void Server::handleRequestPlayerPositions(ClientId id)
+{
+    auto &slot = m_players[static_cast<std::size_t>(id)];
+
+    for (const auto &player : m_players) {
+        if (player.connected && (slot.id != player.id)) {
+            auto packet = net::makePacket(player.id, Command::PlayerPosition);
+            packet << player.rect.left << player.rect.top;
+            m_server.sendPacketToPeer(player.id, packet);
+        }
+    }
 }
 /*
 Server::Server()
@@ -132,22 +154,6 @@ void Server::handleIncomingConection(const RecievedCommandInfo &info)
 */
 
 /*
-void Server::handleRequestPlayerPositions(const RecievedCommandInfo &info)
-{
-    auto &slot = m_clientSlots[static_cast<std::size_t>(info.id)];
-
-    for (const auto &player : m_clientSlots) {
-        if (player.isConnected) {
-            auto packet = makePacket(Command::PlayerPosition, player.id);
-            packet << player.playerBounds.left << player.playerBounds.top;
-            if (m_socket.send(packet, slot.address, slot.port) !=
-                sf::Socket::Done) {
-                std::cout << "Failed to send packet to host\n";
-            }
-        }
-    }
-}
-
 std::size_t Server::emptySlot()
 {
     for (int i = 0; i < (int)m_clientSlots.size(); i++) {

@@ -16,7 +16,6 @@ namespace net {
         , m_onPeerConnect(onPeerConnect)
         , m_onPeerDisconnect(onPeerDisconnect)
     {
-
         auto packet = makePacket(Event::EventType::Connect);
         if (send(packet)) {
             packet.clear();
@@ -25,8 +24,11 @@ namespace net {
                 switch (event.type) {
                     case Event::EventType::AcceptConnection:
                         m_id = event.details.id;
+                        m_socket.setBlocking(false);
+                        break;
 
                     case Event::EventType::RejectConnection:
+                        break;
 
                     default:
                         break;
@@ -35,10 +37,7 @@ namespace net {
         }
     }
 
-    Client::~Client() 
-    {
-
-    }
+    Client::~Client() {}
 
     bool Client::send(sf::Packet &packet)
     {
@@ -58,7 +57,5 @@ namespace net {
         m_onPeerConnect(event.details);
     }
 
-    ClientId Client::getClientId() const {
-        return m_id;
-    }
+    ClientId Client::getClientId() const { return m_id; }
 } // namespace net

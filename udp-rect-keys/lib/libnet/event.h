@@ -36,9 +36,9 @@ namespace net {
          * @brief Info about the sender of the event
          */
         struct Details {
-            ClientId id;
             sf::IpAddress senderIp;
             Port senderPort;
+            ClientId id;
         };
 
         /**
