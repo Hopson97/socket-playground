@@ -11,12 +11,12 @@
 Server::Server()
 {
     m_server.onClientConnect([this](const net::Event::Details &details) {
-        const auto id = details.senderId;
+        const auto id = details.id;
         m_players[static_cast<std::size_t>(id)].connected = true;
     });
 
     m_server.onClientDisconnect([this](const net::Event::Details &details) {
-        const auto id = details.senderId;
+        const auto id = details.id;
         m_players[static_cast<std::size_t>(id)].connected = false;
     });
 }
@@ -30,7 +30,7 @@ void Server::run()
                    Command command) {
                 switch (command) {
                     case Command::PlayerPosition:
-                        handlePlayerPosition(details.senderId, packet);
+                        handlePlayerPosition(details.id, packet);
                         break;
 
                     default:

@@ -34,7 +34,7 @@ namespace net {
          * @brief Info about the sender of the event
          */
         struct Details {
-            ClientId senderId;
+            ClientId id;
             sf::IpAddress senderIp;
             Port senderPort;
         };
@@ -46,6 +46,7 @@ namespace net {
          * @param type The response type
          */
         void respond(sf::UdpSocket &socket, EventType type) const;
+        void respond(sf::UdpSocket &socket, EventType type, ClientId id) const;
 
         friend sf::Packet &operator<<(sf::Packet &packet, EventType &type);
         friend sf::Packet &operator>>(sf::Packet &packet, EventType &type);

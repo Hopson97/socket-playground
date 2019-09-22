@@ -5,15 +5,31 @@
 
 #include <iostream>
 
+#include "packet_factory.h"
+
+namespace {
+    void respond(sf::UdpSocket &socket, const net::Event::Details &details,
+                 sf::Packet &packet)
+    {
+        if (socket.send(packet, details.senderIp, details.senderPort) !=
+            sf::Socket::Done) {
+            std::cerr << "Failed to send response packet\n";
+        }
+    }
+} // namespace
+
 namespace net {
     void Event::respond(sf::UdpSocket &socket, EventType type) const
     {
-        sf::Packet packet;
-        packet << type;
-        if (socket.send(packet, details.senderIp, details.senderPort) !=
-            sf::Socket::Done) {
-            std::cerr << "Failed to send response packet: " << (int)type;
-        }
+        auto packet = makePacket(type);
+        ::respond(socket, details, packet);
+    }
+
+    void Event::respond(sf::UdpSocket &socket, EventType type,
+                        ClientId id) const
+    {
+        auto packet = makePacket(type, id);
+        ::respond(socket, details, packet);
     }
 
     sf::Packet &operator<<(sf::Packet &packet, Event::EventType &type)
@@ -37,7 +53,7 @@ namespace net {
                            event.details.senderPort) != sf::Socket::Done) {
             return false;
         }
-        packet >> event.type >> event.details.senderId;
+        packet >> event.type >> event.details.id;
         return true;
     }
 } // namespace net

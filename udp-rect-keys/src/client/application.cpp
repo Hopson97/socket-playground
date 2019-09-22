@@ -7,8 +7,9 @@
 
 Application::Application()
     : m_client(sf::IpAddress::LocalHost, PORT)
-    , m_player(m_players[m_client.clientId()])
+    //, m_player(m_players[m_client.clientId()])
 {
+    /*
     m_player.sprite.setPosition({20, 20});
     m_player.sprite.setFillColor(sf::Color::Red);
 
@@ -17,14 +18,14 @@ Application::Application()
         auto packet =
             makePacket(Command::GetPlayerPositions, m_client.clientId());
         m_client.send(packet);
-    }
+    }*/
 }
 
 void Application::run()
 {
-    if (!m_client.isConnected()) {
-        return;
-    }
+    //if (!m_client.isConnected()) {
+    //    return;
+    //}
     m_window.create({WINDOW_WIDTH, WINDOW_HEIGHT}, "UDP Socket playground");
     m_window.setFramerateLimit(60);
     m_window.setKeyRepeatEnabled(false);
@@ -74,7 +75,7 @@ void Application::run()
 void Application::input()
 {
     pollWindowEvents();
-
+/*
     // Input
     if (m_keyboard.isKeyDown(sf::Keyboard::Up)) {
         m_player.velocity.y += -0.1;
@@ -87,14 +88,14 @@ void Application::input()
     }
     else if (m_keyboard.isKeyDown(sf::Keyboard::Right)) {
         m_player.velocity.x += 0.1;
-    }
+    }*/
 }
 
 void Application::update(sf::Clock &elapsed, sf::Time delta)
 {
     (void)delta;
     (void)elapsed;
-
+/*
     m_player.sprite.move(m_player.velocity);
     m_player.velocity.x *= 0.98;
     m_player.velocity.y *= 0.98;
@@ -131,22 +132,23 @@ void Application::update(sf::Clock &elapsed, sf::Time delta)
         player.sprite.setPosition(newX, newY);
     }
 
-    handleIncomingPacket();
+    handleIncomingPacket();*/
 }
 
 void Application::render()
 {
+    
     m_window.clear();
-
+/*
     for (auto &player : m_players) {
         if (player.isConnected) {
             m_window.draw(player.sprite);
         }
     }
-
+*/
     m_window.display();
 }
-
+/*
 void Application::handleIncomingPacket()
 {
     RecievedCommandInfo info;
@@ -169,7 +171,7 @@ void Application::handleIncomingPacket()
         }
     }
 }
-
+*/
 void Application::pollWindowEvents()
 {
     sf::Event e;
@@ -185,11 +187,11 @@ void Application::pollWindowEvents()
         }
     }
 }
-
+/*
 void Application::handleRecPlayerPosition(Player &player, sf::Packet &packet)
 {
     packet >> player.nextPosition.x >> player.nextPosition.y;
     player.lerpValue = 0;
 }
-
+*/
 // http://enet.bespin.org/Tutorial.html

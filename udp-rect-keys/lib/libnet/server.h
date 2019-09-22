@@ -3,8 +3,8 @@
 #include <SFML/Network/IpAddress.hpp>
 #include <SFML/Network/UdpSocket.hpp>
 #include <SFML/System/Clock.hpp>
-#include <functional>
 #include <array>
+#include <functional>
 
 #include "event.h"
 
@@ -15,7 +15,8 @@ namespace net {
      * @brief The server that clients can connect to
      */
     class Server final {
-        using OnEventFunction = std::function<void(const Event::Details& details)>;
+        using OnEventFunction =
+            std::function<void(const Event::Details &details)>;
 
         /**
          * @brief Each connected client to this server is considered a
@@ -37,12 +38,12 @@ namespace net {
 
         /**
          * @brief Handles stream of all the packets being recieved
-         * 
-         * @tparam CommandEnum 
-         * @tparam Callback 
-         * @param callback 
-         * @return true 
-         * @return false 
+         *
+         * @tparam CommandEnum
+         * @tparam Callback
+         * @param callback
+         * @return true
+         * @return false
          */
         template <typename CommandEnum, typename Callback>
         bool whileRecievePacket(Callback callback)
@@ -57,7 +58,7 @@ namespace net {
                         break;
 
                     case Event::EventType::Disconnect:
-                        //handle disconnect...
+                        // handle disconnect...
                         m_onDisconnect(event.details);
                         break;
 
@@ -78,7 +79,7 @@ namespace net {
             }
             return false;
         }
-        
+
       private:
         void handleIncomingConnection(const Event &event);
 

@@ -3,6 +3,7 @@
 #include "event.h"
 
 #include <SFML/Network/Packet.hpp>
+#include <iostream>
 
 namespace net {
     Server::Server()
@@ -13,11 +14,13 @@ namespace net {
 
     void Server::onClientConnect(Server::OnEventFunction function)
     {
+        currentConnections++;
         m_onConnect = function;
     }
 
     void Server::onClientDisconnect(Server::OnEventFunction function)
     {
+        currentConnections--;
         m_onDisconnect = function;
     }
 
@@ -29,7 +32,8 @@ namespace net {
             m_clients[slot].port = event.details.senderPort;
             m_clients[slot].lastUpdate = m_clock.getElapsedTime();
 
-            event.respond(m_socket, Event::EventType::AcceptConnection);
+            event.respond(m_socket, Event::EventType::AcceptConnection,
+                          static_cast<ClientId>(slot));
             m_onConnect(event.details);
         }
         else {
@@ -39,7 +43,7 @@ namespace net {
 
     void Server::keepAlive(const Event &event)
     {
-        auto &client = getClient(event.details.senderId);
+        auto &client = getClient(event.details.id);
         client.lastUpdate = m_clock.getElapsedTime();
     }
 
