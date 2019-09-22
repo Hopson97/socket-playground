@@ -55,7 +55,8 @@ void Application::run()
         m_client.whileRecievePacket<Command>(
             [this](const net::Event::Details &details, sf::Packet &packet,
                    Command command) {
-                auto &player = m_players[static_cast<net::ClientId>(details.id)];
+                auto &player =
+                    m_players[static_cast<net::ClientId>(details.id)];
                 player.isConnected = true;
                 switch (command) {
                     case Command::PlayerPosition:
@@ -67,7 +68,7 @@ void Application::run()
                 }
             });
 
-        if (netTimer.getElapsedTime().asMilliseconds() > 5) {
+        if (netTimer.getElapsedTime().asMilliseconds() > 100) {
             auto packet = net::makePacket(m_client.getClientId(),
                                           Command::PlayerPosition);
             packet << m_player.sprite.getPosition().x
@@ -81,7 +82,6 @@ void Application::run()
             m_client.send(packet);
             netTimer.restart();
         }
-
         render();
     }
 }
@@ -133,11 +133,11 @@ void Application::update(sf::Clock &elapsed, sf::Time delta)
     for (auto &player : m_players) {
         if (&player == &m_player)
             continue;
-        //player.sprite.setPosition(player.nextPosition.x, player.nextPosition.y);
+
         auto lerp = [](float a, float b, float t) {
             return (1 - t) * a + t * b;
         };
-        player.lerpValue += 0.5 * delta.asSeconds();
+        player.lerpValue += delta.asSeconds();
         auto newX = lerp(player.sprite.getPosition().x, player.nextPosition.x,
                          player.lerpValue);
         auto newY = lerp(player.sprite.getPosition().y, player.nextPosition.y,

@@ -23,7 +23,6 @@ Server::Server()
               m_players[static_cast<std::size_t>(id)].connected = false;
           })
 {
-  
 }
 
 void Server::run()

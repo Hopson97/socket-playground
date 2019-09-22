@@ -42,7 +42,7 @@ class Application {
     void handleIncomingPacket();
 */
     void handlePlayerPosition(Player &player, sf::Packet &packet);
-    
+
     net::Client m_client;
 
     Player &m_player;
