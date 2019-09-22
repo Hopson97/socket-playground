@@ -6,8 +6,14 @@
 #include "../common/net_helper.h"
 
 Application::Application()
-    : m_client(sf::IpAddress::LocalHost, PORT)
-    //, m_player(m_players[m_client.clientId()])
+    : m_client(sf::IpAddress::LocalHost, PORT,
+               [this](const net::Event::Details &details) {
+                   std::cout << details.senderIp.toString();
+               },
+               [this](const net::Event::Details &details) {
+                   std::cout << details.senderIp.toString();
+               })
+//, m_player(m_players[m_client.clientId()])
 {
     /*
     m_player.sprite.setPosition({20, 20});
@@ -23,7 +29,7 @@ Application::Application()
 
 void Application::run()
 {
-    //if (!m_client.isConnected()) {
+    // if (!m_client.isConnected()) {
     //    return;
     //}
     m_window.create({WINDOW_WIDTH, WINDOW_HEIGHT}, "UDP Socket playground");
@@ -75,77 +81,77 @@ void Application::run()
 void Application::input()
 {
     pollWindowEvents();
-/*
-    // Input
-    if (m_keyboard.isKeyDown(sf::Keyboard::Up)) {
-        m_player.velocity.y += -0.1;
-    }
-    else if (m_keyboard.isKeyDown(sf::Keyboard::Down)) {
-        m_player.velocity.y += 0.1;
-    }
-    if (m_keyboard.isKeyDown(sf::Keyboard::Left)) {
-        m_player.velocity.x += -0.1;
-    }
-    else if (m_keyboard.isKeyDown(sf::Keyboard::Right)) {
-        m_player.velocity.x += 0.1;
-    }*/
+    /*
+        // Input
+        if (m_keyboard.isKeyDown(sf::Keyboard::Up)) {
+            m_player.velocity.y += -0.1;
+        }
+        else if (m_keyboard.isKeyDown(sf::Keyboard::Down)) {
+            m_player.velocity.y += 0.1;
+        }
+        if (m_keyboard.isKeyDown(sf::Keyboard::Left)) {
+            m_player.velocity.x += -0.1;
+        }
+        else if (m_keyboard.isKeyDown(sf::Keyboard::Right)) {
+            m_player.velocity.x += 0.1;
+        }*/
 }
 
 void Application::update(sf::Clock &elapsed, sf::Time delta)
 {
     (void)delta;
     (void)elapsed;
-/*
-    m_player.sprite.move(m_player.velocity);
-    m_player.velocity.x *= 0.98;
-    m_player.velocity.y *= 0.98;
+    /*
+        m_player.sprite.move(m_player.velocity);
+        m_player.velocity.x *= 0.98;
+        m_player.velocity.y *= 0.98;
 
-    const float x = m_player.sprite.getPosition().x;
-    const float y = m_player.sprite.getPosition().y;
+        const float x = m_player.sprite.getPosition().x;
+        const float y = m_player.sprite.getPosition().y;
 
-    if (x + PLAYER_WIDTH > WINDOW_WIDTH) {
-        m_player.sprite.setPosition(WINDOW_WIDTH - PLAYER_WIDTH - 1, y);
-    }
-    if (y + PLAYER_HEIGHT > WINDOW_HEIGHT) {
-        m_player.sprite.setPosition(x, WINDOW_HEIGHT - PLAYER_HEIGHT - 1);
-    }
-    if (x < 0) {
-        m_player.sprite.setPosition(1, y);
-    }
-    if (y < 0) {
-        m_player.sprite.setPosition(x, 1);
-    }
+        if (x + PLAYER_WIDTH > WINDOW_WIDTH) {
+            m_player.sprite.setPosition(WINDOW_WIDTH - PLAYER_WIDTH - 1, y);
+        }
+        if (y + PLAYER_HEIGHT > WINDOW_HEIGHT) {
+            m_player.sprite.setPosition(x, WINDOW_HEIGHT - PLAYER_HEIGHT - 1);
+        }
+        if (x < 0) {
+            m_player.sprite.setPosition(1, y);
+        }
+        if (y < 0) {
+            m_player.sprite.setPosition(x, 1);
+        }
 
-    for (auto &player : m_players) {
-        if (&player == &m_player)
-            continue;
-        player.sprite.setPosition(player.nextPosition.x, player.nextPosition.y);
-        auto lerp = [](float a, float b, float t) {
-            return (1 - t) * a + t * b;
-        };
-        player.lerpValue += 0.5 * delta.asSeconds();
-        auto newX = lerp(player.sprite.getPosition().x, player.nextPosition.x,
-                         player.lerpValue);
-        auto newY = lerp(player.sprite.getPosition().y, player.nextPosition.y,
-                         player.lerpValue);
+        for (auto &player : m_players) {
+            if (&player == &m_player)
+                continue;
+            player.sprite.setPosition(player.nextPosition.x,
+       player.nextPosition.y); auto lerp = [](float a, float b, float t) {
+                return (1 - t) * a + t * b;
+            };
+            player.lerpValue += 0.5 * delta.asSeconds();
+            auto newX = lerp(player.sprite.getPosition().x,
+       player.nextPosition.x, player.lerpValue); auto newY =
+       lerp(player.sprite.getPosition().y, player.nextPosition.y,
+                             player.lerpValue);
 
-        player.sprite.setPosition(newX, newY);
-    }
+            player.sprite.setPosition(newX, newY);
+        }
 
-    handleIncomingPacket();*/
+        handleIncomingPacket();*/
 }
 
 void Application::render()
 {
-    
+
     m_window.clear();
-/*
-    for (auto &player : m_players) {
-        if (player.isConnected) {
-            m_window.draw(player.sprite);
+    /*
+        for (auto &player : m_players) {
+            if (player.isConnected) {
+                m_window.draw(player.sprite);
+            }
         }
-    }
-*/
+    */
     m_window.display();
 }
 /*

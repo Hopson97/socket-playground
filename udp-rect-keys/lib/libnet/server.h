@@ -15,8 +15,6 @@ namespace net {
      * @brief The server that clients can connect to
      */
     class Server final {
-        using OnEventFunction =
-            std::function<void(const Event::Details &details)>;
 
         /**
          * @brief Each connected client to this server is considered a
@@ -31,10 +29,8 @@ namespace net {
       public:
         static constexpr std::size_t MAX_CONNECTIONS = 4;
 
-        Server();
-
-        void onClientConnect(OnEventFunction function);
-        void onClientDisconnect(OnEventFunction function);
+        Server(OnEventFunction onClientConnect,
+               OnEventFunction onClientDisconnect);
 
         /**
          * @brief Handles stream of all the packets being recieved

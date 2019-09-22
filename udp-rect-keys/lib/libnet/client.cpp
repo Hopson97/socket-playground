@@ -8,9 +8,13 @@
 #include <SFML/Network/Packet.hpp>
 
 namespace net {
-    Client::Client(const sf::IpAddress &serverAddress, Port serverPort)
+    Client::Client(const sf::IpAddress &serverAddress, Port serverPort,
+                   OnEventFunction onPeerConnect,
+                   OnEventFunction onPeerDisconnect)
         : m_serverAddress(serverAddress)
         , m_serverPort(serverPort)
+        , m_onPeerConnect(onPeerConnect)
+        , m_onPeerDisconnect(onPeerDisconnect)
     {
 
         auto packet = makePacket(Event::EventType::Connect);
@@ -31,6 +35,11 @@ namespace net {
         }
     }
 
+    Client::~Client() 
+    {
+
+    }
+
     bool Client::send(sf::Packet &packet)
     {
         return m_socket.send(packet, m_serverAddress, m_serverPort) ==
@@ -41,5 +50,11 @@ namespace net {
     {
         return m_socket.receive(packet, m_recievedIp, m_recievedPort) ==
                sf::Socket::Done;
+    }
+
+    void Client::handlePeerConnection(const Event &event)
+    {
+
+        m_onPeerConnect(event.details);
     }
 } // namespace net

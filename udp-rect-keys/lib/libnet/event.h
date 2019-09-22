@@ -7,6 +7,7 @@ namespace sf {
 
 #include <SFML/Network/IpAddress.hpp>
 #include <cstdint>
+#include <functional>
 
 namespace net {
     using Port = std::uint16_t;
@@ -17,6 +18,7 @@ namespace net {
      * event type and the sender
      */
     struct Event final {
+
         /**
          * @brief The different event types
          */
@@ -66,4 +68,6 @@ namespace net {
      */
     bool receiveNetEvent(sf::UdpSocket &socket, sf::Packet &packet,
                          Event &event);
+
+    using OnEventFunction = std::function<void(const Event::Details &details)>;
 } // namespace net

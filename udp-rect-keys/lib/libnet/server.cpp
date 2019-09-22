@@ -6,22 +6,13 @@
 #include <iostream>
 
 namespace net {
-    Server::Server()
+    Server::Server(OnEventFunction onClientConnect,
+                   OnEventFunction onClientDisconnect)
+        : m_onConnect(onClientConnect)
+        , m_onDisconnect(onClientDisconnect)
     {
         m_socket.bind(54321);
         m_socket.setBlocking(false);
-    }
-
-    void Server::onClientConnect(Server::OnEventFunction function)
-    {
-        currentConnections++;
-        m_onConnect = function;
-    }
-
-    void Server::onClientDisconnect(Server::OnEventFunction function)
-    {
-        currentConnections--;
-        m_onDisconnect = function;
     }
 
     void Server::handleIncomingConnection(const Event &event)

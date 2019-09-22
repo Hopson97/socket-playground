@@ -19,7 +19,6 @@ class Application {
     void run();
 
   private:
-  
     constexpr static unsigned WINDOW_WIDTH = 400;
     constexpr static unsigned WINDOW_HEIGHT = 200;
     /*
@@ -44,7 +43,7 @@ class Application {
 
     void handleRecPlayerPosition(Player &player, sf::Packet &packet);
 
-    
+
     ClientManager m_client;
 
     Player &m_player;

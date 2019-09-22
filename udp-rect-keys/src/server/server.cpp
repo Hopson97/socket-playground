@@ -9,16 +9,16 @@
 #include <libnet/event.h>
 
 Server::Server()
+    : m_server(
+          [this](const net::Event::Details &details) {
+              const auto id = details.id;
+              m_players[static_cast<std::size_t>(id)].connected = true;
+          },
+          [this](const net::Event::Details &details) {
+              const auto id = details.id;
+              m_players[static_cast<std::size_t>(id)].connected = false;
+          })
 {
-    m_server.onClientConnect([this](const net::Event::Details &details) {
-        const auto id = details.id;
-        m_players[static_cast<std::size_t>(id)].connected = true;
-    });
-
-    m_server.onClientDisconnect([this](const net::Event::Details &details) {
-        const auto id = details.id;
-        m_players[static_cast<std::size_t>(id)].connected = false;
-    });
 }
 
 void Server::run()
