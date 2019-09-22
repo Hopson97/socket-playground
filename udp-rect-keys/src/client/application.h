@@ -1,6 +1,5 @@
 #pragma once
 
-#include "client_manager.h"
 #include "input/keyboard.h"
 
 #include <SFML/Graphics/RectangleShape.hpp>
@@ -21,6 +20,9 @@ class Application {
   private:
     constexpr static unsigned WINDOW_WIDTH = 400;
     constexpr static unsigned WINDOW_HEIGHT = 200;
+
+    constexpr static float PLAYER_HEIGHT = 32;
+    constexpr static float PLAYER_WIDTH = 32;
 
     struct Player {
         Player() { sprite.setSize({PLAYER_WIDTH, PLAYER_HEIGHT}); }
@@ -46,7 +48,7 @@ class Application {
     net::Client m_client;
 
     Player &m_player;
-    std::array<Player, CLIENT_COUNT> m_players;
+    std::array<Player, 4> m_players;
 
     sf::RenderWindow m_window;
     Keyboard m_keyboard;

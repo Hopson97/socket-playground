@@ -4,10 +4,10 @@
 #include <iostream>
 #include <libnet/packet_factory.h>
 
-#include "../common/net_helper.h"
+#include "../common/commands.h"
 
 Application::Application()
-    : m_client(sf::IpAddress::LocalHost, PORT,
+    : m_client(sf::IpAddress::LocalHost, 54321,
                [this](const net::Event::Details &details) {
                    std::cout << details.senderIp.toString();
                },
@@ -145,8 +145,6 @@ void Application::update(sf::Clock &elapsed, sf::Time delta)
 
         player.sprite.setPosition(newX, newY);
     }
-
-    // handleIncomingPacket();
 }
 
 void Application::render()
@@ -162,30 +160,7 @@ void Application::render()
 
     m_window.display();
 }
-/*
-void Application::handleIncomingPacket()
-{
-    RecievedCommandInfo info;
-    sf::Packet packet;
-    while (m_client.recievePacket(info, packet)) {
 
-        if (info.id == m_client.clientId()) {
-            continue;
-        }
-        auto &player = m_players[info.id];
-        player.isConnected = true;
-
-        switch (info.command) {
-            case Command::PlayerPosition:
-                handleRecPlayerPosition(player, packet);
-                break;
-
-            default:
-                break;
-        }
-    }
-}
-*/
 void Application::pollWindowEvents()
 {
     sf::Event e;
@@ -207,5 +182,3 @@ void Application::handlePlayerPosition(Player &player, sf::Packet &packet)
     packet >> player.nextPosition.x >> player.nextPosition.y;
     player.lerpValue = 0;
 }
-
-// http://enet.bespin.org/Tutorial.html

@@ -6,13 +6,11 @@ project(udp-rects VERSION 1.0)
 set(SOURCES
 	src/main.cpp
 	src/client/application.cpp
-	src/client/client_manager.cpp
 	src/client/input/keyboard.cpp
 
 	src/server/server.cpp
 
 	src/common/commands.cpp
-    src/common/net_helper.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
