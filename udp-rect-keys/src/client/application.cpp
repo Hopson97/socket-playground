@@ -57,7 +57,6 @@ void Application::run()
                    Command command) {
                 auto &player = m_players[static_cast<net::ClientId>(details.id)];
                 player.isConnected = true;
-                std::cout << "Got some info from " << (int)details.id << '\n';
                 switch (command) {
                     case Command::PlayerPosition:
                         handlePlayerPosition(player, packet);
@@ -68,7 +67,7 @@ void Application::run()
                 }
             });
 
-        if (netTimer.getElapsedTime().asMilliseconds() > 20) {
+        if (netTimer.getElapsedTime().asMilliseconds() > 5) {
             auto packet = net::makePacket(m_client.getClientId(),
                                           Command::PlayerPosition);
             packet << m_player.sprite.getPosition().x
@@ -134,7 +133,7 @@ void Application::update(sf::Clock &elapsed, sf::Time delta)
     for (auto &player : m_players) {
         if (&player == &m_player)
             continue;
-        player.sprite.setPosition(player.nextPosition.x, player.nextPosition.y);
+        //player.sprite.setPosition(player.nextPosition.x, player.nextPosition.y);
         auto lerp = [](float a, float b, float t) {
             return (1 - t) * a + t * b;
         };
@@ -205,7 +204,6 @@ void Application::pollWindowEvents()
 
 void Application::handlePlayerPosition(Player &player, sf::Packet &packet)
 {
-    std::cout << "Player position received\n";
     packet >> player.nextPosition.x >> player.nextPosition.y;
     player.lerpValue = 0;
 }

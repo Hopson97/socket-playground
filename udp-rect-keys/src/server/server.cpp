@@ -16,7 +16,7 @@ Server::Server()
               player.connected = true;
               player.id = details.id;
               std::cout << "Player connected!\n";
-              std::cout << "ID: " << (int)player.id;
+              std::cout << "ID: " << (int)player.id << std::endl;
           },
           [this](const net::Event::Details &details) {
               const auto id = details.id;
@@ -59,15 +59,13 @@ void Server::handlePlayerPosition(ClientId id, sf::Packet &packet)
     player.rect.top = y;
 }
 
-void Server::handleRequestPlayerPositions(ClientId id)
+void Server::handleRequestPlayerPositions(ClientId requesterId)
 {
-    auto &slot = m_players[static_cast<std::size_t>(id)];
-
     for (const auto &player : m_players) {
-        if (player.connected && (slot.id != player.id)) {
+        if (player.connected && (requesterId != player.id)) {
             auto packet = net::makePacket(player.id, Command::PlayerPosition);
             packet << player.rect.left << player.rect.top;
-            m_server.sendPacketToPeer(player.id, packet);
+            m_server.sendPacketToPeer(requesterId, packet);
         }
     }
 }
