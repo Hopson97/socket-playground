@@ -24,6 +24,12 @@ namespace net {
         }
     }
 
+    void Server::broadcastToPeers(sf::Packet& packet) {
+        for (std::size_t i = 0 ; i < m_clients.size(); i++) {
+            sendPacketToPeer(static_cast<ClientId>(i), packet);
+        }
+    }
+
     void Server::handleIncomingConnection(const Event &event)
     {
         if (auto slot = emptySlot(); slot < MAX_CONNECTIONS) {
