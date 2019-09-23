@@ -18,6 +18,7 @@ Application::Application()
 {
     m_player.sprite.setPosition(0, 0);
     m_player.isConnected = true;
+    m_player.sprite.setFillColor(sf::Color::Red);
 
     std::cout << "Client set up! ID: " << (int)m_client.getClientId() << '\n';
 }
