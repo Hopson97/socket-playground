@@ -7,7 +7,7 @@
 
 #include <array>
 
-struct RecievedCommandInfo;
+struct receivedCommandInfo;
 
 class Server final {
     struct Player {

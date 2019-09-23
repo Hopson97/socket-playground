@@ -9,7 +9,7 @@
 
 #include <sabre/client.h>
 
-struct RecievedCommandInfo;
+struct receivedCommandInfo;
 
 class Application {
   public:
