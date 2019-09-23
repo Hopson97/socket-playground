@@ -3,7 +3,7 @@
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Network/UdpSocket.hpp>
 #include <SFML/System/Clock.hpp>
-#include <libnet/server.h>
+#include <sabre/server.h>
 
 #include <array>
 
@@ -12,7 +12,7 @@ struct RecievedCommandInfo;
 class Server final {
     struct Player {
         sf::FloatRect rect;
-        net::ClientId id;
+        sabre::ClientId id;
         bool connected = false;
     };
 
@@ -22,11 +22,11 @@ class Server final {
     void run();
 
   private:
-    void handlePlayerPosition(net::ClientId id, sf::Packet &packet);
-    void handleRequestPlayerPositions(net::ClientId id);
+    void handlePlayerPosition(sabre::ClientId id, sf::Packet &packet);
+    void handleRequestPlayerPositions(sabre::ClientId id);
 
-    net::Server m_server;
-    std::array<Player, net::Server::MAX_CONNECTIONS> m_players;
+    sabre::Server m_server;
+    std::array<Player, sabre::Server::MAX_CONNECTIONS> m_players;
 
     bool m_isRunning = true;
 };

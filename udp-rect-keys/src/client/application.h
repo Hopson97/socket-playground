@@ -7,7 +7,7 @@
 
 #include <SFML/Network/Packet.hpp>
 
-#include <libnet/client.h>
+#include <sabre/client.h>
 
 struct RecievedCommandInfo;
 
@@ -45,7 +45,7 @@ class Application {
 */
     void handlePlayerPosition(Player &player, sf::Packet &packet);
 
-    net::Client m_client;
+    sabre::Client m_client;
 
     Player &m_player;
     std::array<Player, 4> m_players;

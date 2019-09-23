@@ -2,16 +2,16 @@
 
 #include <SFML/Window/Event.hpp>
 #include <iostream>
-#include <libnet/packet_factory.h>
+#include <sabre/packet_factory.h>
 
 #include "../common/commands.h"
 
 Application::Application()
     : m_client(sf::IpAddress::LocalHost, 54321,
-               [this](const net::Event::Details &details) {
+               [this](const sabre::Event::Details &details) {
                    std::cout << details.senderIp.toString();
                },
-               [this](const net::Event::Details &details) {
+               [this](const sabre::Event::Details &details) {
                    std::cout << details.senderIp.toString();
                })
     , m_player(m_players[m_client.getClientId()])
@@ -53,10 +53,10 @@ void Application::run()
         }
 
         m_client.whileRecievePacket<Command>(
-            [this](const net::Event::Details &details, sf::Packet &packet,
+            [this](const sabre::Event::Details &details, sf::Packet &packet,
                    Command command) {
                 auto &player =
-                    m_players[static_cast<net::ClientId>(details.id)];
+                    m_players[static_cast<sabre::ClientId>(details.id)];
                 player.isConnected = true;
                 switch (command) {
                     case Command::PlayerPosition:
@@ -69,7 +69,7 @@ void Application::run()
             });
 
         if (netTimer.getElapsedTime().asMilliseconds() > 100) {
-            auto packet = net::makePacket(m_client.getClientId(),
+            auto packet = sabre::makePacket(m_client.getClientId(),
                                           Command::PlayerPosition);
             packet << m_player.sprite.getPosition().x
                    << m_player.sprite.getPosition().y;
@@ -77,7 +77,7 @@ void Application::run()
 
             netTimer.restart();
 
-            packet = net::makePacket(m_client.getClientId(),
+            packet = sabre::makePacket(m_client.getClientId(),
                                      Command::GetPlayerPositions);
             m_client.send(packet);
             netTimer.restart();
