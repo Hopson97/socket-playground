@@ -7,6 +7,7 @@ namespace sf {
 
 #include <SFML/Network/IpAddress.hpp>
 #include <cstdint>
+#include <functional>
 
 namespace net {
     using Port = std::uint16_t;
@@ -16,13 +17,14 @@ namespace net {
      * @brief An 'Event' sent via UDP sockets, holding information about the
      * event type and the sender
      */
-    struct Event {
+    struct Event final {
+
         /**
          * @brief The different event types
          */
-        enum class EventType : uint16_t {
+        enum class EventType : uint8_t {
             Connect,
-            DataRecieve,
+            Data,
             Disconnect,
             KeepAlive,
 
@@ -33,30 +35,31 @@ namespace net {
         /**
          * @brief Info about the sender of the event
          */
-        struct RequestDetails {
-            ClientId senderId;
+        struct Details {
             sf::IpAddress senderIp;
             Port senderPort;
+            ClientId id;
         };
 
         /**
          * @brief Sends a quick response back to the sender of the net event
-         * 
+         *
          * @param socket The socket to send the response with
          * @param type The response type
          */
         void respond(sf::UdpSocket &socket, EventType type) const;
+        void respond(sf::UdpSocket &socket, EventType type, ClientId id) const;
 
-        friend sf::Packet &operator<<(sf::Packet &packet, EventType &type);
+        friend sf::Packet &operator<<(sf::Packet &packet, EventType type);
         friend sf::Packet &operator>>(sf::Packet &packet, EventType &type);
 
         EventType type;
-        RequestDetails details;
-    };//struct Event
+        Details details;
+    }; // struct Event
 
     /**
-     * @brief Receives an event via a UDP socket    
-     * 
+     * @brief Receives an event via a UDP socket
+     *
      * @param socket The socket to receive the event on
      * @param packet The packet that was received
      * @param event The event that was recieved
@@ -65,4 +68,6 @@ namespace net {
      */
     bool receiveNetEvent(sf::UdpSocket &socket, sf::Packet &packet,
                          Event &event);
+
+    using OnEventFunction = std::function<void(const Event::Details &details)>;
 } // namespace net

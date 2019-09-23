@@ -7,7 +7,6 @@
 
 int main(int argc, char **argv)
 {
-    std::cout << sf::IpAddress::getLocalAddress() << std::endl;
     if (argc < 3) {
         std::cout << "Please enter `server/client name`" << std::endl;
         return 0;

@@ -3,40 +3,31 @@
 #include "event.h"
 
 #include <SFML/Network/Packet.hpp>
+#include <iostream>
 
 namespace net {
-    Server::Server()
+    Server::Server(OnEventFunction onClientConnect,
+                   OnEventFunction onClientDisconnect)
+        : m_onConnect(onClientConnect)
+        , m_onDisconnect(onClientDisconnect)
     {
         m_socket.bind(54321);
         m_socket.setBlocking(false);
+        m_clientConnected.fill(false);
     }
 
-    bool Server::recievePacket(Event &event)
+    void Server::sendPacketToPeer(ClientId peerId, sf::Packet &packet)
     {
-        sf::Packet packet;
-        if (receiveNetEvent(m_socket, packet, event)) {
-            switch (event.type) {
-                case Event::EventType::Connect:
-                    handleIncomingConnection(event);
-                    break;
-
-                case Event::EventType::Disconnect:
-                    break;
-
-                case Event::EventType::KeepAlive:
-                    keepAlive(event);
-                    break;
-
-                case Event::EventType::DataRecieve:
-                    keepAlive(event);
-                    break;
-
-                default:
-                    break;
-            }
-            return true;
+        if (m_clientConnected[peerId]) {
+            auto &client = getClient(peerId);
+            m_socket.send(packet, client.address, client.port);
         }
-        return false;
+    }
+
+    void Server::broadcastToPeers(sf::Packet& packet) {
+        for (std::size_t i = 0 ; i < m_clients.size(); i++) {
+            sendPacketToPeer(static_cast<ClientId>(i), packet);
+        }
     }
 
     void Server::handleIncomingConnection(const Event &event)
@@ -47,15 +38,19 @@ namespace net {
             m_clients[slot].port = event.details.senderPort;
             m_clients[slot].lastUpdate = m_clock.getElapsedTime();
 
-            event.respond(m_socket, Event::EventType::AcceptConnection);
+            event.respond(m_socket, Event::EventType::AcceptConnection,
+                          static_cast<ClientId>(slot));
+            
+            m_onConnect({event.details.senderIp, event.details.senderPort, static_cast<ClientId>(slot)});
         }
         else {
             event.respond(m_socket, Event::EventType::RejectConnection);
         }
     }
 
-    void Server::keepAlive(const Event& event) {
-        auto& client = getClient(event.details.senderId);
+    void Server::keepAlive(const Event &event)
+    {
+        auto &client = getClient(event.details.id);
         client.lastUpdate = m_clock.getElapsedTime();
     }
 
@@ -69,7 +64,8 @@ namespace net {
         return MAX_CONNECTIONS + 1;
     }
 
-    Server::ConnectedClient& Server::getClient(ClientId id) {
+    Server::ConnectedClient &Server::getClient(ClientId id)
+    {
         return m_clients[static_cast<std::size_t>(id)];
     }
 

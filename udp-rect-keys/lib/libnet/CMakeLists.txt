@@ -3,4 +3,5 @@ add_library(
     event.cpp
     server.cpp
     client.cpp
+    packet_factory.cpp
 )

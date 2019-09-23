@@ -2,27 +2,29 @@
 
 #include <SFML/Window/Event.hpp>
 #include <iostream>
+#include <libnet/packet_factory.h>
 
-#include "../common/net_helper.h"
+#include "../common/commands.h"
 
 Application::Application()
-    : m_client(sf::IpAddress::LocalHost, PORT)
-    , m_player(m_players[m_client.clientId()])
+    : m_client(sf::IpAddress::LocalHost, 54321,
+               [this](const net::Event::Details &details) {
+                   std::cout << details.senderIp.toString();
+               },
+               [this](const net::Event::Details &details) {
+                   std::cout << details.senderIp.toString();
+               })
+    , m_player(m_players[m_client.getClientId()])
 {
-    m_player.sprite.setPosition({20, 20});
-    m_player.sprite.setFillColor(sf::Color::Red);
+    m_player.sprite.setPosition(0, 0);
+    m_player.isConnected = true;
 
-    if (m_client.isConnected()) {
-        m_player.isConnected = true;
-        auto packet =
-            makePacket(Command::GetPlayerPositions, m_client.clientId());
-        m_client.send(packet);
-    }
+    std::cout << "Client set up! ID: " << (int)m_client.getClientId() << '\n';
 }
 
 void Application::run()
 {
-    if (!m_client.isConnected()) {
+     if (!m_client.connected()) {
         return;
     }
     m_window.create({WINDOW_WIDTH, WINDOW_HEIGHT}, "UDP Socket playground");
@@ -49,22 +51,37 @@ void Application::run()
             lag -= timePerUpdate;
             update(timer, elapsed);
         }
-        if (netTimer.getElapsedTime().asMilliseconds() > 20) {
-            auto packet = makePacket(Command::KeepAlive, m_client.clientId());
-            m_client.send(packet);
 
-            packet = makePacket(Command::PlayerPosition, m_client.clientId());
+        m_client.whileRecievePacket<Command>(
+            [this](const net::Event::Details &details, sf::Packet &packet,
+                   Command command) {
+                auto &player =
+                    m_players[static_cast<net::ClientId>(details.id)];
+                player.isConnected = true;
+                switch (command) {
+                    case Command::PlayerPosition:
+                        handlePlayerPosition(player, packet);
+                        break;
+
+                    default:
+                        break;
+                }
+            });
+
+        if (netTimer.getElapsedTime().asMilliseconds() > 100) {
+            auto packet = net::makePacket(m_client.getClientId(),
+                                          Command::PlayerPosition);
             packet << m_player.sprite.getPosition().x
                    << m_player.sprite.getPosition().y;
             m_client.send(packet);
 
             netTimer.restart();
 
-            packet =
-                makePacket(Command::GetPlayerPositions, m_client.clientId());
+            packet = net::makePacket(m_client.getClientId(),
+                                     Command::GetPlayerPositions);
             m_client.send(packet);
+            netTimer.restart();
         }
-
         render();
     }
 }
@@ -116,11 +133,11 @@ void Application::update(sf::Clock &elapsed, sf::Time delta)
     for (auto &player : m_players) {
         if (&player == &m_player)
             continue;
-        player.sprite.setPosition(player.nextPosition.x, player.nextPosition.y);
+
         auto lerp = [](float a, float b, float t) {
             return (1 - t) * a + t * b;
         };
-        player.lerpValue += 0.5 * delta.asSeconds();
+        player.lerpValue += delta.asSeconds();
         auto newX = lerp(player.sprite.getPosition().x, player.nextPosition.x,
                          player.lerpValue);
         auto newY = lerp(player.sprite.getPosition().y, player.nextPosition.y,
@@ -128,12 +145,11 @@ void Application::update(sf::Clock &elapsed, sf::Time delta)
 
         player.sprite.setPosition(newX, newY);
     }
-
-    handleIncomingPacket();
 }
 
 void Application::render()
 {
+
     m_window.clear();
 
     for (auto &player : m_players) {
@@ -143,29 +159,6 @@ void Application::render()
     }
 
     m_window.display();
-}
-
-void Application::handleIncomingPacket()
-{
-    RecievedCommandInfo info;
-    sf::Packet packet;
-    while (m_client.recievePacket(info, packet)) {
-
-        if (info.id == m_client.clientId()) {
-            continue;
-        }
-        auto &player = m_players[info.id];
-        player.isConnected = true;
-
-        switch (info.command) {
-            case Command::PlayerPosition:
-                handleRecPlayerPosition(player, packet);
-                break;
-
-            default:
-                break;
-        }
-    }
 }
 
 void Application::pollWindowEvents()
@@ -184,10 +177,8 @@ void Application::pollWindowEvents()
     }
 }
 
-void Application::handleRecPlayerPosition(Player &player, sf::Packet &packet)
+void Application::handlePlayerPosition(Player &player, sf::Packet &packet)
 {
     packet >> player.nextPosition.x >> player.nextPosition.y;
     player.lerpValue = 0;
 }
-
-// http://enet.bespin.org/Tutorial.html
