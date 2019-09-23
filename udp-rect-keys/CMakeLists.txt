@@ -32,7 +32,6 @@ endfunction()
 
 add_subdirectory(lib)
 
-set_flags(net)
 set_flags(${PROJECT_NAME})
 
 
@@ -45,7 +44,7 @@ find_package(SFML REQUIRED network graphics window system)
 
 #Finally
 target_link_libraries(${PROJECT_NAME} 
-	net
+	sabre
     Threads::Threads 
     ${SFML_LIBRARIES} 
     ${SFML_DEPENDENCIES}
