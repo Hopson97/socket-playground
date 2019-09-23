@@ -30,7 +30,7 @@ void Server::run()
 {
     while (m_isRunning) {
         std::this_thread::sleep_for(std::chrono::milliseconds(20));
-        m_server.ticking<Command>(
+        m_server.whileTicking<Command>(
             [this](const sabre::Event::Details &details, sf::Packet &packet,
                    Command command) {
                 switch (command) {
