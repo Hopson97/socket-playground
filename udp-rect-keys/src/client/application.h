@@ -18,8 +18,8 @@ class Application {
     void run();
 
   private:
-    constexpr static unsigned WINDOW_WIDTH = 400;
-    constexpr static unsigned WINDOW_HEIGHT = 200;
+    constexpr static unsigned WINDOW_WIDTH = 800;
+    constexpr static unsigned WINDOW_HEIGHT = 600;
 
     constexpr static float PLAYER_HEIGHT = 32;
     constexpr static float PLAYER_WIDTH = 32;
