@@ -18,7 +18,6 @@ Application::Application()
 {
     m_player.sprite.setPosition(0, 0);
     m_player.isConnected = true;
-    m_player.sprite.setFillColor(sf::Color::Red);
 
     m_player.sprite.setOutlineColor(sf::Color::Red);
     m_player.sprite.setOutlineThickness(2);
@@ -72,7 +71,7 @@ void Application::run()
                 }
             });
 
-        if (netTimer.getElapsedTime().asMilliseconds() > 100) {
+        if (netTimer.getElapsedTime().asMilliseconds() > 25) {
             auto packet = sabre::makePacket(m_client.getClientId(),
                                           Command::PlayerPosition);
             packet << m_player.sprite.getPosition().x
@@ -95,17 +94,18 @@ void Application::input()
     pollWindowEvents();
 
     // Input
+    float speed = 0.15f;
     if (m_keyboard.isKeyDown(sf::Keyboard::Up)) {
-        m_player.velocity.y += -0.1;
+        m_player.velocity.y += -speed;
     }
     else if (m_keyboard.isKeyDown(sf::Keyboard::Down)) {
-        m_player.velocity.y += 0.1;
+        m_player.velocity.y += speed;
     }
     if (m_keyboard.isKeyDown(sf::Keyboard::Left)) {
-        m_player.velocity.x += -0.1;
+        m_player.velocity.x += -speed;
     }
     else if (m_keyboard.isKeyDown(sf::Keyboard::Right)) {
-        m_player.velocity.x += 0.1;
+        m_player.velocity.x += speed;
     }
 }
 
@@ -115,8 +115,7 @@ void Application::update(sf::Clock &elapsed, sf::Time delta)
     (void)elapsed;
 
     m_player.sprite.move(m_player.velocity);
-    m_player.velocity.x *= 0.98;
-    m_player.velocity.y *= 0.98;
+    m_player.velocity *= 0.95f;
 
     const float x = m_player.sprite.getPosition().x;
     const float y = m_player.sprite.getPosition().y;
