@@ -20,6 +20,7 @@ Application::Application()
     m_player.isConnected = true;
 
     m_player.sprite.setOutlineColor(sf::Color::Red);
+    m_player.sprite.setOutlineThickness(2);
 
     std::cout << "Client set up! ID: " << (int)m_client.getClientId() << '\n';
 }
