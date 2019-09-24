@@ -1,5 +1,7 @@
 #!/bin/bash
 
+sh scripts/getsabre.sh
+
 mkdir -p bin
 cd bin 
 mkdir -p release
