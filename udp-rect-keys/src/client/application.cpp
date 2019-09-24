@@ -52,7 +52,7 @@ void Application::run()
             update(timer, elapsed);
         }
 
-        m_client.whileRecievePacket<Command>(
+        m_client.whileTicking<Command>(
             [this](const sabre::Event::Details &details, sf::Packet &packet,
                    Command command) {
                 auto &player =
