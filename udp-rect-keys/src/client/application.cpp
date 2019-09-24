@@ -140,7 +140,7 @@ void Application::update(sf::Clock &elapsed, sf::Time delta)
         auto lerp = [](float a, float b, float t) {
             return (1 - t) * a + t * b;
         };
-        player.lerpValue += delta.asSeconds();
+        player.lerpValue += delta.asSeconds() * 2;
         auto newX = lerp(player.sprite.getPosition().x, player.nextPosition.x,
                          player.lerpValue);
         auto newY = lerp(player.sprite.getPosition().y, player.nextPosition.y,
