@@ -5,7 +5,7 @@ I am learning how to use sockets to connected two or more computer together, spe
 In order:
 1. [TCP Chat](https://github.com/Hopson97/socket-playground/tree/master/tcp-chat)
     
-This is a server-client chat app, was first time succesfully using sockets.
+This is a server-client chat app, was first time successfully using sockets.
 
 2. [UDP Click Rects](https://github.com/Hopson97/socket-playground/tree/master/udp-rect-click)
 
